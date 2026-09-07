@@ -15,18 +15,18 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    const fingerprint = await clientFingerprint("questions");
-    if (!(await consumeRateLimit(`questions:${fingerprint}`, 4, 3600))) {
-      return NextResponse.json(
-        { error: "Please wait before sending another question." },
-        { status: 429 },
-      );
-    }
     const admin = createAdminSupabaseClient();
     if (!admin) {
       return NextResponse.json(
         { error: "Questions are awaiting production configuration." },
         { status: 503 },
+      );
+    }
+    const fingerprint = await clientFingerprint("questions");
+    if (!(await consumeRateLimit(`questions:${fingerprint}`, 4, 3600))) {
+      return NextResponse.json(
+        { error: "Please wait before sending another question." },
+        { status: 429 },
       );
     }
     const supabase = await createServerSupabaseClient();
