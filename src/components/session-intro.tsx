@@ -10,8 +10,8 @@ export function SessionIntro() {
   const [visible, setVisible] = useState(false);
   const [rotation, setRotation] = useState({ x: -8, y: 16 });
   const dragging = useRef(false);
-  const moved = useRef(false);
   const lastPoint = useRef({ x: 0, y: 0 });
+  const enterButton = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -23,6 +23,10 @@ export function SessionIntro() {
       window.setTimeout(() => setVisible(true), 0);
     }
   }, [pathname]);
+
+  useEffect(() => {
+    if (visible) enterButton.current?.focus();
+  }, [visible]);
 
   function enter() {
     sessionStorage.setItem("kv-intro-seen", "1");
@@ -39,6 +43,11 @@ export function SessionIntro() {
       aria-label="Welcome to K-VERSATION"
       tabIndex={0}
       onKeyDown={(event) => {
+        if (event.key === "Tab") {
+          event.preventDefault();
+          enterButton.current?.focus();
+          return;
+        }
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           enter();
@@ -54,7 +63,6 @@ export function SessionIntro() {
         }}
         onPointerDown={(event) => {
           dragging.current = true;
-          moved.current = false;
           lastPoint.current = { x: event.clientX, y: event.clientY };
           event.currentTarget.setPointerCapture(event.pointerId);
         }}
@@ -62,7 +70,6 @@ export function SessionIntro() {
           if (!dragging.current) return;
           const dx = event.clientX - lastPoint.current.x;
           const dy = event.clientY - lastPoint.current.y;
-          if (Math.abs(dx) + Math.abs(dy) > 2) moved.current = true;
           setRotation((value) => ({
             x: Math.max(-40, Math.min(40, value.x - dy * 0.3)),
             y: value.y + dx * 0.4,
@@ -85,12 +92,10 @@ export function SessionIntro() {
         ))}
       </div>
       <button
+        ref={enterButton}
         type="button"
         className="intro-enter"
-        onClick={() => {
-          if (!moved.current) enter();
-          moved.current = false;
-        }}
+        onClick={enter}
       >
         <span>Click to Start</span>
         <span aria-hidden="true">↗</span>
