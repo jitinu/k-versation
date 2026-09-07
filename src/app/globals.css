@@ -42,4 +42,5 @@ label{display:grid;gap:.45rem;color:var(--navy);font-weight:800}label em,small{c
 .hero-wordmark{overflow:visible;font-size:clamp(3rem,12.5vw,13rem)}
 .not-found-page{min-width:0;padding-inline:.5rem;overflow-wrap:anywhere}.not-found-code{font-size:clamp(6rem,40vw,14rem)}
 .session-intro{max-width:100vw;padding-inline:1rem;overscroll-behavior:contain;touch-action:none}.korea-object{touch-action:none}.intro-note{max-width:100%;padding-inline:.5rem;text-align:center}
-@media (max-width:920px){.media-feature.is-reverse .feature-artwork{order:0;width:100%}.archive-item{grid-template-columns:3rem 1fr}.archive-item .archive-artwork,.archive-item .archive-copy{grid-column:2}.archive-item .archive-arrow{grid-column:2}}
+@media (max-width:920px){.media-feature.is-reverse{grid-template-columns:minmax(0,1fr)}.media-feature.is-reverse .feature-artwork{order:0;width:100%}.archive-item{grid-template-columns:3rem 1fr}.archive-item .archive-artwork,.archive-item .archive-copy{grid-column:2}.archive-item .archive-arrow{grid-column:2}}
+@media (max-width:560px){.footer-main{grid-template-columns:minmax(0,1fr)}.footer-bottom{flex-wrap:wrap;gap:1rem}.site-footer{min-width:0}.footer-statement{max-width:100%;overflow-wrap:anywhere}}
