@@ -41,7 +41,10 @@ export function MediaFeature({
 }) {
   if (!item) {
     return (
-      <section className={`media-feature media-feature--empty${reverse ? " is-reverse" : ""}`}>
+      <section
+        className={`media-feature media-feature--empty${reverse ? " is-reverse" : ""}`}
+        data-reveal
+      >
         <div className="feature-artwork empty-artwork">
           <span className="outline-type">{label.at(0)}</span>
           <span className="empty-rule" />
@@ -59,7 +62,7 @@ export function MediaFeature({
   }
   const href = `/${item.kind === "conversation" ? "conversations" : "dispatches"}/${item.slug}`;
   return (
-    <section className={`media-feature${reverse ? " is-reverse" : ""}`}>
+    <section className={`media-feature${reverse ? " is-reverse" : ""}`} data-reveal>
       <Link href={href} className="feature-artwork">
         <MediaArtwork item={item} priority />
         <span className="artwork-index">{item.kind === "conversation" ? "C" : "D"}—01</span>
@@ -94,7 +97,11 @@ export function MediaArchiveCard({
 }) {
   const href = `/${item.kind === "conversation" ? "conversations" : "dispatches"}/${item.slug}`;
   return (
-    <article className="archive-item">
+    <article
+      className="archive-item"
+      data-reveal
+      style={{ "--reveal-delay": `${Math.min(index, 5) * 80}ms` } as React.CSSProperties}
+    >
       <p className="archive-index">{String(index + 1).padStart(2, "0")}</p>
       <Link href={href} className="archive-artwork">
         <MediaArtwork item={item} />

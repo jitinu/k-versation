@@ -13,7 +13,7 @@ export default async function DispatchesPage() {
   const items = await getPublishedMedia("dispatch");
   return (
     <div className="archive-page">
-      <header className="page-intro">
+      <header className="page-intro" data-reveal>
         <p className="eyebrow">Daniel directly exploring an idea</p>
         <h1>Dispatches</h1>
         <p>

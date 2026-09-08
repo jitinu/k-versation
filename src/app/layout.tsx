@@ -3,6 +3,7 @@ import { Archivo, Cormorant_Garamond } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { ImpressionTracker } from "@/components/impression-tracker";
+import { motionReadyScript, PageFade, ScrollReveal } from "@/components/motion";
 import { SessionIntro } from "@/components/session-intro";
 import { getViewer } from "@/lib/data";
 import { siteUrl } from "@/lib/env";
@@ -42,8 +43,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light",
-  themeColor: "#f2efe8",
+  colorScheme: "dark",
+  themeColor: "#0d1826",
 };
 
 export default async function RootLayout({
@@ -51,13 +52,23 @@ export default async function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const viewer = await getViewer();
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+    <html
+      lang="en"
+      className={`${sans.variable} ${serif.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: motionReadyScript }} />
+      </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to content</a>
         <SessionIntro />
         <Header viewer={viewer} />
         <ImpressionTracker />
-        <main id="main-content">{children}</main>
+        <ScrollReveal />
+        <main id="main-content">
+          <PageFade>{children}</PageFade>
+        </main>
         <Footer />
       </body>
     </html>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -11,15 +12,27 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="about-page">
-      <header className="about-hero">
+      <header className="about-hero" data-reveal>
         <p className="eyebrow">About the project</p>
         <h1>A bridge is not a shortcut. It is a place to meet.</h1>
       </header>
-      <div className="about-portrait" role="img" aria-label="Portrait space for Daniel Koo">
-        <div className="portrait-initials">DK</div>
-        <p>Daniel Koo<br />Founder &amp; host</p>
+      <div className="about-portrait" data-reveal="scale">
+        <div className="portrait-frame">
+          <Image
+            src="/daniel-koo.jpg"
+            alt="Daniel Koo, founder and host of K-VERSATION"
+            width={1200}
+            height={1500}
+            sizes="(max-width: 920px) 100vw, 45vw"
+            priority
+          />
+        </div>
+        <p className="portrait-caption">
+          Daniel Koo
+          <span>Founder &amp; host</span>
+        </p>
       </div>
-      <section className="about-story">
+      <section className="about-story" data-reveal>
         <p className="story-lead">
           K-VERSATION began with a simple conviction: Korea deserves to be
           encountered in its full depth—not as a trend, a headline, or a
@@ -46,14 +59,18 @@ export default function AboutPage() {
           ["Curiosity over certainty", "Questions stay open long enough to uncover a perspective we may not expect."],
           ["Exchange over broadcast", "The audience is part of the conversation—not simply a number watching it."],
         ].map(([title, copy], index) => (
-          <article key={title}>
+          <article
+            key={title}
+            data-reveal
+            style={{ "--reveal-delay": `${index * 100}ms` } as React.CSSProperties}
+          >
             <span>{String(index + 1).padStart(2, "0")}</span>
             <h2>{title}</h2>
             <p>{copy}</p>
           </article>
         ))}
       </section>
-      <section className="about-cta">
+      <section className="about-cta" data-reveal>
         <h2>Bring a question.<br />Leave with a wider view.</h2>
         <div>
           <Link className="button" href="/conversations">Watch Conversations</Link>

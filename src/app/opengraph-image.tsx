@@ -9,8 +9,9 @@ export default function Image() {
     (
       <div
         style={{
-          background: "#f2efe8",
-          color: "#243b5a",
+          background:
+            "linear-gradient(180deg, #132438 0%, #0d1826 55%, #080f19 100%)",
+          color: "#f7f2e8",
           width: "100%",
           height: "100%",
           display: "flex",
@@ -20,13 +21,13 @@ export default function Image() {
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ fontSize: 24, letterSpacing: 5, textTransform: "uppercase" }}>
+        <div style={{ fontSize: 24, letterSpacing: 5, textTransform: "uppercase", color: "#d4a35f" }}>
           Korea ↔ The World
         </div>
         <div style={{ display: "flex", alignItems: "center", fontSize: 112, fontWeight: 800, letterSpacing: -7 }}>
-          K<span style={{ width: 100, height: 14, background: "#243b5a", margin: "0 16px" }} />VERSATION
+          K<span style={{ width: 100, height: 14, background: "#d4a35f", margin: "0 16px" }} />VERSATION
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, color: "rgba(247,242,232,0.82)" }}>
           <span>Original conversations &amp; dispatches</span>
           <span>Hosted by Daniel Koo</span>
         </div>

@@ -46,9 +46,9 @@ export function Globe({ countries }: { countries: CountryCount[] }) {
       center,
       radius,
     );
-    gradient.addColorStop(0, "#f9fbfd");
-    gradient.addColorStop(0.65, "#d8e2eb");
-    gradient.addColorStop(1, "#607a92");
+    gradient.addColorStop(0, "#2f4b6d");
+    gradient.addColorStop(0.65, "#1a3049");
+    gradient.addColorStop(1, "#0b1727");
     context.fillStyle = gradient;
     context.beginPath();
     context.arc(center, center, radius, 0, Math.PI * 2);
@@ -58,7 +58,7 @@ export function Globe({ countries }: { countries: CountryCount[] }) {
     context.beginPath();
     context.arc(center, center, radius, 0, Math.PI * 2);
     context.clip();
-    context.strokeStyle = "rgba(36,59,90,.18)";
+    context.strokeStyle = "rgba(212,163,95,.22)";
     context.lineWidth = 1;
     for (let lat = -60; lat <= 60; lat += 30) {
       context.beginPath();
@@ -102,7 +102,7 @@ export function Globe({ countries }: { countries: CountryCount[] }) {
       })
       .filter((country) => country && country.point.z > 0);
 
-    context.strokeStyle = "rgba(255,255,255,.45)";
+    context.strokeStyle = "rgba(236,208,166,.45)";
     visible.forEach((country, index) => {
       if (!country || index === 0) return;
       const previous = visible[index - 1];
@@ -122,7 +122,7 @@ export function Globe({ countries }: { countries: CountryCount[] }) {
     visible.forEach((country) => {
       if (!country) return;
       const markerRadius = 4 + Math.sqrt(country.count / maxCount) * 10;
-      context.fillStyle = "#243b5a";
+      context.fillStyle = "#d4a35f";
       context.beginPath();
       context.arc(
         center + country.point.x,
@@ -132,7 +132,7 @@ export function Globe({ countries }: { countries: CountryCount[] }) {
         Math.PI * 2,
       );
       context.fill();
-      context.strokeStyle = "rgba(255,255,255,.8)";
+      context.strokeStyle = "rgba(247,242,232,.85)";
       context.stroke();
     });
   }, [countries, rotation]);

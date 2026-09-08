@@ -13,7 +13,7 @@ export default function TermsPage() {
         <h1>Terms &amp; Conditions</h1>
         <p>Last updated September 7, 2026</p>
       </header>
-      <div className="legal-copy">
+      <div className="legal-copy" data-reveal>
         <p>
           These terms govern access to K-VERSATION, including its films,
           editorial material, member features, and question submission tools.
