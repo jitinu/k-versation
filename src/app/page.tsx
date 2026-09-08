@@ -1,69 +1,93 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getLatest, getMembersByCountry, getSiteNumbers } from "@/lib/data";
+import { VideoCard } from "@/components/video/VideoCard";
+import { SplitText } from "@/components/motion/SplitText";
+import { Reveal } from "@/components/motion/Reveal";
+import Globe from "@/components/Globe";
 
-export default function Home() {
+export default async function Home() {
+  const [conversation, monologue, numbers, members] = await Promise.all([
+    getLatest("conversation"),
+    getLatest("monologue"),
+    getSiteNumbers(),
+    getMembersByCountry(),
+  ]);
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="page">
+      <section className="grain flex min-h-[calc(100dvh-20rem)] flex-col justify-between pb-16">
+        <div>
+          <p className="text-signal text-xs">K-VERSATION / EST. BAY AREA</p>
+          <p className="text-ink-2 mt-12 max-w-xl text-lg normal-case">
+            Sharing Korean culture with the world through conversations and monologues by Daniel
+            Koo. Stories, ideas, and experiences connecting where we come from with where we are
+            going.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <h1 className="display-clamp">
+          <SplitText mode="char">K-VERSATION</SplitText>
+        </h1>
+      </section>
+      <section className="section-gap">
+        {conversation ? (
+          <>
+            <p className="text-signal mb-4 text-xs">Latest Conversation</p>
+            <VideoCard video={conversation} featured />
+            <Link
+              className="link-draw mt-6 inline-block text-sm"
+              href={`/video/${conversation.slug}`}
+            >
+              Go watch the latest Conversation!
+            </Link>
+          </>
+        ) : (
+          <Empty title="Latest Conversation" />
+        )}
+      </section>
+      <section className="section-gap">
+        {monologue ? (
+          <>
+            <p className="text-signal mb-4 text-xs">Latest Monologue</p>
+            <VideoCard video={monologue} featured />
+            <Link className="link-draw mt-6 inline-block text-sm" href={`/video/${monologue.slug}`}>
+              Go watch the latest Monologue!
+            </Link>
+          </>
+        ) : (
+          <Empty title="Latest Monologue" />
+        )}
+      </section>
+      <section className="section-gap">
+        <p className="text-signal mb-10 text-xs">By the numbers</p>
+        <div className="grid gap-12 lg:grid-cols-2">
+          <Globe members={members} />
+          <div className="grid grid-cols-2 gap-x-6 gap-y-12">
+            {[
+              ["impressions", numbers.impressions, "Total site impressions"],
+              ["views", numbers.views, "Total site views"],
+              ["members", numbers.members, "Total members"],
+              ["countries", numbers.countries, "Countries reached"],
+            ].map(([key, value, label], index) => (
+              <Reveal key={String(key)} delay={index * 80}>
+                <p className="text-5xl md:text-6xl">{Number(value).toLocaleString()}</p>
+                <p className="text-ink-3 mt-2 text-xs">{label}</p>
+              </Reveal>
+            ))}
+          </div>
         </div>
-      </main>
+      </section>
+      <section className="section-gap text-center">
+        <Link href="/conversations" className="border-signal text-signal border px-6 py-4">
+          Start watching
+        </Link>
+      </section>
+    </div>
+  );
+}
+function Empty({ title }: { title: string }) {
+  return (
+    <div className="border-line border-y py-12">
+      <p className="text-signal text-xs">{title}</p>
+      <p className="font-display mt-4 text-4xl normal-case">First conversation coming soon.</p>
     </div>
   );
 }
