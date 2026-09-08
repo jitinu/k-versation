@@ -13,6 +13,25 @@ export default function SignupPage() {
       : "/",
   );
   const [error, setError] = useState("");
+  const [usernameStatus, setUsernameStatus] = useState("");
+  async function checkUsername(username: string) {
+    const normalized = username.toLowerCase();
+    if (!/^[a-z0-9_]{3,20}$/.test(normalized)) {
+      setUsernameStatus("Use 3–20 lowercase letters, numbers, or underscores.");
+      return;
+    }
+    if (!hasSupabaseEnv()) return;
+    const { data, error: availabilityError } = await createClient().rpc("username_available", {
+      p_username: normalized,
+    });
+    setUsernameStatus(
+      availabilityError
+        ? "Could not check username."
+        : data
+          ? "Username available."
+          : "Username taken.",
+    );
+  }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -60,7 +79,14 @@ export default function SignupPage() {
           ))}
         </select>
         <input name="phone" placeholder="Phone (optional)" />
-        <input name="username" pattern="[a-z0-9_]{3,20}" placeholder="Username" required />
+        <input
+          name="username"
+          pattern="[a-z0-9_]{3,20}"
+          placeholder="Username"
+          required
+          onBlur={(event) => void checkUsername(event.target.value)}
+        />
+        {usernameStatus && <p className="text-ink-2 text-xs normal-case">{usernameStatus}</p>}
         <input name="password" type="password" minLength={6} placeholder="Password" required />
         {error && <p className="text-signal normal-case">{error}</p>}
         <button className="border-signal text-signal border px-4 py-3">Create account</button>

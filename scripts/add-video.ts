@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { createAdminClient } from "../src/lib/supabase/admin";
+import { createAdminClient } from "./supabase-admin";
 
 function arg(name: string) {
   const index = process.argv.indexOf(name);

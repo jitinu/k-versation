@@ -41,7 +41,7 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
           <Reactions videoId={video.id} stats={stats} />
           <SubscribeButton />
         </div>
-        <Comments />
+        <Comments videoId={video.id} />
       </div>
     </article>
   );

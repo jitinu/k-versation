@@ -1,13 +1,44 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRequireAuth } from "@/components/auth/AuthGate";
 import type { Comment } from "@/lib/supabase/types";
-export function Comments({ comments = [] }: { comments?: Comment[] }) {
+import { createClient, hasSupabaseEnv } from "@/lib/supabase/client";
+export function Comments({ videoId }: { videoId: string }) {
   const gate = useRequireAuth();
   const [body, setBody] = useState("");
+  const [comments, setComments] = useState<Comment[]>([]);
+
+  useEffect(() => {
+    if (!hasSupabaseEnv()) return;
+    void createClient()
+      .from("comments")
+      .select("*, profiles(username, display_name)")
+      .eq("video_id", videoId)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => setComments((data ?? []) as Comment[]));
+  }, [videoId]);
+
   function submit(event: FormEvent) {
     event.preventDefault();
-    gate(() => setBody(""));
+    if (!body.trim()) return;
+    gate(() => {
+      void (async () => {
+        const client = createClient();
+        const {
+          data: { user },
+        } = await client.auth.getUser();
+        if (!user) return;
+        const { data, error } = await client
+          .from("comments")
+          .insert({ video_id: videoId, user_id: user.id, body: body.trim() })
+          .select("*, profiles(username, display_name)")
+          .single();
+        if (!error && data) {
+          setComments((current) => [data as Comment, ...current]);
+          setBody("");
+        }
+      })();
+    });
   }
   return (
     <section className="mt-16">

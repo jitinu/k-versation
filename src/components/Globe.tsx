@@ -13,14 +13,17 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const [width, setWidth] = useState(0);
-  const globeMaterial = useMemo(() => new MeshPhongMaterial({ color: "#141414" }), []);
+  const globeMaterial = useMemo(
+    () => new MeshPhongMaterial({ color: "#181818", emissive: "#0a0a0a", shininess: 4 }),
+    [],
+  );
   const points = useMemo(
     () =>
       members
         .map((row) => {
           const coords = getCountryCoords(row.country_code);
           return coords
-            ? { ...row, lat: coords[0], lng: coords[1], size: Math.sqrt(row.members) / 30 }
+            ? { ...row, lat: coords[0], lng: coords[1], size: 1.2 + Math.sqrt(row.members) * 0.6 }
             : null;
         })
         .filter((point): point is NonNullable<typeof point> => point !== null)
@@ -59,10 +62,19 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
   }, []);
 
   useEffect(() => {
-    const controls = globeRef.current?.controls();
-    if (!controls) return;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.6;
+    if (width === 0) return;
+    const timer = setInterval(() => {
+      const globe = globeRef.current;
+      if (!globe) return;
+      const controls = globe.controls();
+      if (!controls) return;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.6;
+      controls.enableZoom = false;
+      globe.pointOfView({ lat: 30, lng: 110, altitude: 1.7 });
+      clearInterval(timer);
+    }, 100);
+    return () => clearInterval(timer);
   }, [width]);
 
   return (
@@ -76,7 +88,11 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           globeMaterial={globeMaterial}
           showAtmosphere
           atmosphereColor="#ff1a00"
-          atmosphereAltitude={0.04}
+          atmosphereAltitude={0.08}
+          showGraticules
+          pointLabel={(d) =>
+            `${(d as CountryMembers).country_name}: ${(d as CountryMembers).members}`
+          }
           pointsData={points}
           pointsMerge={false}
           pointLat="lat"
@@ -88,13 +104,14 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           ringLat="lat"
           ringLng="lng"
           ringColor={() => "#ff1a00"}
-          ringMaxRadius={2}
-          ringPropagationSpeed={1}
+          ringMaxRadius={6}
+          ringPropagationSpeed={2}
           ringRepeatPeriod={1800}
           arcsData={arcs}
           arcColor={() => "#ff1a00"}
+          arcStroke={0.4}
           arcDashLength={0.4}
-          arcDashGap={1}
+          arcDashGap={0.6}
           arcDashAnimateTime={1800}
           enablePointerInteraction
         />

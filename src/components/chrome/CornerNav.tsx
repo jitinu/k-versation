@@ -48,7 +48,7 @@ export function CornerNav() {
     router.refresh();
   };
   return (
-    <header className="fixed top-0 left-0 z-40 w-full p-4 md:w-auto md:p-8">
+    <header className="bg-canvas fixed top-0 left-0 z-40 w-full p-4 md:w-auto md:p-8 md:pr-12 md:pb-10">
       <div className="flex items-start justify-between gap-8 md:block">
         <Link href="/" className="text-signal text-sm">
           K-VERSATION
