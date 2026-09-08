@@ -86,7 +86,7 @@ function LegalPage({
         <h1>{title}</h1>
         <p>Last updated {updated}</p>
       </header>
-      <div className="legal-copy">{children}</div>
+      <div className="legal-copy" data-reveal>{children}</div>
     </article>
   );
 }

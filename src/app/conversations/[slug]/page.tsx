@@ -48,7 +48,7 @@ export default async function ConversationPage({ params }: Props) {
         </div>
       </header>
       <div className="player-frame"><VideoPlayer item={item} /></div>
-      <div className="watch-body">
+      <div className="watch-body" data-reveal>
         <div className="watch-description">
           {item.description.split("\n").map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
@@ -68,7 +68,7 @@ export default async function ConversationPage({ params }: Props) {
 function Related({ items }: { items: Awaited<ReturnType<typeof getPublishedMedia>> }) {
   if (!items.length) return null;
   return (
-    <section className="related-section">
+    <section className="related-section" data-reveal>
       <p className="eyebrow">Continue watching</p>
       {items.map((item) => (
         <Link key={item.id} href={`/conversations/${item.slug}`}>

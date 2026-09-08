@@ -10,7 +10,7 @@ export default async function AccountPage() {
   if (!viewer) redirect("/sign-in?next=/account");
   return (
     <div className="account-page">
-      <header className="page-intro">
+      <header className="page-intro" data-reveal>
         <p className="eyebrow">Member account</p>
         <h1>Hello, {viewer.name}.</h1>
         <p>Keep your profile accurate and your session secure.</p>

@@ -13,7 +13,7 @@ export default async function ConversationsPage() {
   const items = await getPublishedMedia("conversation");
   return (
     <div className="archive-page">
-      <header className="page-intro">
+      <header className="page-intro" data-reveal>
         <p className="eyebrow">Daniel with another person</p>
         <h1>Conversations</h1>
         <p>

@@ -13,7 +13,7 @@ export default async function QuestionsPage() {
   const viewer = await getViewer();
   return (
     <div className="questions-page">
-      <header className="page-intro">
+      <header className="page-intro" data-reveal>
         <p className="eyebrow">Start an exchange</p>
         <h1>Questions</h1>
         <p>
@@ -21,7 +21,7 @@ export default async function QuestionsPage() {
           propose a subject, or share a perspective worth exploring.
         </p>
       </header>
-      <div className="questions-layout">
+      <div className="questions-layout" data-reveal>
         <aside>
           <span>01</span>
           <h2>Every thoughtful question is a possible beginning.</h2>
