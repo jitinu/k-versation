@@ -20,7 +20,9 @@ export default function ForgotPassword() {
       ) : (
         <form onSubmit={submit} className="space-y-4">
           <input name="email" type="email" placeholder="Email" required />
-          <button className="border-signal text-signal border px-4 py-3">Send reset link</button>
+          <button className="btn btn-primary">
+            Send reset link <span className="arrow">↗</span>
+          </button>
         </form>
       )}
     </AuthLayout>

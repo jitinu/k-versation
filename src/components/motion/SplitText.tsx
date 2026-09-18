@@ -44,11 +44,15 @@ export function SplitText({
   return (
     <span ref={ref} className={className} aria-label={children}>
       {parts.map((part, index) => (
-        <span className="inline-block overflow-hidden align-bottom" key={`${part}-${index}`}>
+        <span
+          className={`inline-block overflow-hidden align-bottom ${
+            mode === "word" && index < parts.length - 1 ? "mr-[0.25em]" : ""
+          }`}
+          key={`${part}-${index}`}
+        >
           <span aria-hidden="true" className={mode === "char" ? "split-char" : "split-word"}>
             {part}
           </span>
-          {mode === "word" && index < parts.length - 1 ? "\u00a0" : null}
         </span>
       ))}
     </span>

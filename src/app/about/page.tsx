@@ -2,7 +2,7 @@ import Image from "next/image";
 export const metadata = { title: "About", description: "Meet Daniel Koo, founder of K-VERSATION." };
 export default function About() {
   return (
-    <div className="page section-gap pt-40">
+    <div data-theme="ivory" className="page section-gap">
       <div className="grid gap-12 md:grid-cols-2 md:items-center">
         <div className="grain relative aspect-[4/5]">
           <Image
@@ -14,7 +14,8 @@ export default function About() {
           />
         </div>
         <div>
-          <h1 className="text-6xl">About</h1>
+          <p className="eyebrow">The person behind K-VERSATION</p>
+          <h1 className="mt-6 text-5xl tracking-[-0.03em] md:text-7xl">About Daniel</h1>
           <div className="text-ink-2 mt-10 space-y-6 text-lg">
             <p className="normal-case">
               {

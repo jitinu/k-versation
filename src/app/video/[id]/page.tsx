@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getVideoBySlugOrId, getVideoStats } from "@/lib/data";
-import { VideoPlayer } from "@/components/video/VideoPlayer";
+import { Comments } from "@/components/video/Comments";
 import { Reactions } from "@/components/video/Reactions";
 import { SubscribeButton } from "@/components/video/SubscribeButton";
-import { Comments } from "@/components/video/Comments";
+import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { duration } from "@/components/video/VideoCard";
+import { getVideoBySlugOrId, getVideoStats } from "@/lib/data";
+
 export async function generateMetadata({
   params,
 }: {
@@ -20,29 +21,38 @@ export async function generateMetadata({
       }
     : { title: "Video not found" };
 }
+
 export default async function VideoPage({ params }: { params: Promise<{ id: string }> }) {
   const video = await getVideoBySlugOrId((await params).id);
   if (!video) notFound();
   const stats = await getVideoStats(video.id);
   return (
-    <article className="page section-gap pt-28 md:pt-40">
-      <VideoPlayer video={video} />
-      <div className="mx-auto max-w-4xl py-12">
-        <p className="text-signal text-xs">
-          {video.section} · {new Date(video.published_at).toLocaleDateString()} ·{" "}
-          {duration(video.duration_seconds)} · {stats.views.toLocaleString()} views
-        </p>
-        <h1 className="font-display mt-5 text-5xl normal-case md:text-7xl">{video.title}</h1>
-        {video.subtitle && <p className="text-ink-2 mt-4">{video.subtitle}</p>}
-        <p className="text-ink-2 mt-10 text-lg whitespace-pre-line normal-case">
-          {video.description}
-        </p>
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          <Reactions videoId={video.id} stats={stats} />
-          <SubscribeButton />
+    <>
+      <section data-theme="ink" className="section-gap pt-0">
+        <div className="page">
+          <VideoPlayer video={video} />
         </div>
-        <Comments videoId={video.id} />
-      </div>
-    </article>
+      </section>
+      <section data-theme="ivory" className="section-gap pt-0">
+        <div className="page">
+          <div className="mx-auto max-w-4xl">
+            <p className="eyebrow">
+              {video.section} · {new Date(video.published_at).toLocaleDateString()} ·{" "}
+              {duration(video.duration_seconds)} · {stats.views.toLocaleString()} views
+            </p>
+            <h1 className="font-display mt-6 text-3xl normal-case md:text-5xl">{video.title}</h1>
+            {video.subtitle && <p className="text-ink-2 mt-4 text-lg">{video.subtitle}</p>}
+            <p className="text-ink-2 mt-10 max-w-3xl text-lg whitespace-pre-line normal-case">
+              {video.description}
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-4">
+              <Reactions videoId={video.id} stats={stats} />
+              <SubscribeButton />
+            </div>
+            <Comments videoId={video.id} />
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

@@ -3,8 +3,8 @@ export default function OpenGraphImage() {
   return new ImageResponse(
     <div
       style={{
-        background: "#0a0a0a",
-        color: "#ff1a00",
+        background: "#e8e8e3",
+        color: "#080807",
         width: "1200px",
         height: "630px",
         display: "flex",

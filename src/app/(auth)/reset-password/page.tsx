@@ -19,7 +19,9 @@ export default function ResetPassword() {
       ) : (
         <form onSubmit={submit} className="space-y-4">
           <input name="password" type="password" minLength={6} required />
-          <button className="border-signal text-signal border px-4 py-3">Update password</button>
+          <button className="btn btn-primary">
+            Update password <span className="arrow">↗</span>
+          </button>
         </form>
       )}
     </AuthLayout>

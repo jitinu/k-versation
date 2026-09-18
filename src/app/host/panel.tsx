@@ -13,14 +13,17 @@ export function HostPanel({ videos, numbers }: { videos: Video[]; numbers: SiteN
     setTimeout(() => setMessage(""), 1200);
   };
   return (
-    <div className="page section-gap pt-40">
+    <div data-theme="ivory" className="page section-gap">
       <div className="flex justify-between">
-        <h1 className="text-5xl">Host mode</h1>
+        <div>
+          <p className="eyebrow">Private workspace</p>
+          <h1 className="mt-4 text-5xl tracking-[-0.03em] md:text-7xl">Host mode</h1>
+        </div>
         <button
           onClick={() =>
             fetch("/api/host/logout", { method: "POST" }).then(() => location.reload())
           }
-          className="link-draw"
+          className="btn btn-ghost px-4 py-2"
         >
           Log out
         </button>

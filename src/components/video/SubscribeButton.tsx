@@ -22,7 +22,7 @@ export function SubscribeButton() {
 
   return (
     <button
-      className="border-signal text-signal border px-4 py-3"
+      className="btn btn-ghost px-4 py-3"
       onClick={() =>
         gate(() => {
           void (async () => {

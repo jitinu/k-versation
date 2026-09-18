@@ -22,11 +22,14 @@ export function HostLogin() {
   }
 
   return (
-    <div className="page section-gap mx-auto max-w-xl pt-40">
-      <h1 className="mb-10 text-5xl">Host mode</h1>
+    <div data-theme="ivory" className="page section-gap mx-auto max-w-xl">
+      <p className="eyebrow">Private workspace</p>
+      <h1 className="mt-6 mb-10 text-5xl tracking-[-0.03em] md:text-7xl">Host mode</h1>
       <form onSubmit={submit} className="space-y-4">
         <input name="password" type="password" placeholder="Password" required />
-        <button className="border-signal text-signal border px-4 py-3">Enter</button>
+        <button className="btn btn-primary">
+          Enter <span className="arrow">↗</span>
+        </button>
         {error && <p className="text-signal normal-case">{error}</p>}
       </form>
     </div>

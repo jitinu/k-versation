@@ -61,7 +61,9 @@ export function Comments({ videoId }: { videoId: string }) {
           placeholder="Leave a thought..."
           rows={4}
         />
-        <button className="border-signal text-signal mt-3 border px-4 py-2">Comment</button>
+        <button className="btn btn-primary mt-3 px-4 py-2">
+          Comment <span className="arrow">↗</span>
+        </button>
       </form>
     </section>
   );

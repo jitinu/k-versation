@@ -1,121 +1,207 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { GlobeMethods } from "react-globe.gl";
 import { MeshPhongMaterial } from "three";
+import { feature } from "topojson-client";
+import type { FeatureCollection } from "geojson";
+import topology from "world-atlas/countries-110m.json";
 import { getCountryCoords } from "@/lib/countryCoords";
 import type { CountryMembers } from "@/lib/supabase/types";
 
 const GlobeImpl = dynamic(() => import("react-globe.gl"), { ssr: false });
 
+type Point = CountryMembers & { lat: number; lng: number; size: number };
+
+const aliases: Record<string, string[]> = {
+  "United States": ["United States of America"],
+  "South Korea": ["South Korea", "Republic of Korea"],
+  "United Arab Emirates": ["United Arab Emirates", "UAE"],
+  UAE: ["United Arab Emirates", "UAE"],
+  "United Kingdom": ["United Kingdom"],
+  Taiwan: ["Taiwan"],
+  China: ["China"],
+  Japan: ["Japan"],
+};
+
+function matchesCountry(name: string, country: string) {
+  const normalized = name.toLowerCase();
+  return [country, ...(aliases[country] ?? [])].some(
+    (candidate) => candidate.toLowerCase() === normalized,
+  );
+}
+
 export default function Globe({ members }: { members: CountryMembers[] }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
-  const [width, setWidth] = useState(0);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const globeMaterial = useMemo(
-    () => new MeshPhongMaterial({ color: "#181818", emissive: "#0a0a0a", shininess: 4 }),
+    () =>
+      new MeshPhongMaterial({
+        color: "#141311",
+        emissive: "#0a0a09",
+        shininess: 6,
+      }),
     [],
   );
+  const countries = useMemo(() => {
+    const collection = feature(
+      topology as never,
+      (topology as never as { objects: { countries: unknown } }).objects.countries as never,
+    ) as unknown as FeatureCollection;
+    return collection.features.filter(
+      (country) => country.properties?.name?.toString().toLowerCase() !== "north korea",
+    );
+  }, []);
   const points = useMemo(
     () =>
       members
         .map((row) => {
           const coords = getCountryCoords(row.country_code);
           return coords
-            ? { ...row, lat: coords[0], lng: coords[1], size: 1.2 + Math.sqrt(row.members) * 0.6 }
+            ? {
+                ...row,
+                lat: coords[0],
+                lng: coords[1],
+                size: 0.6 + Math.sqrt(row.members) * 0.35,
+              }
             : null;
         })
-        .filter((point): point is NonNullable<typeof point> => point !== null)
-        .sort((a, b) => b.members - a.members),
+        .filter((point): point is Point => point !== null),
     [members],
   );
+  const memberNames = useMemo(() => members.map((member) => member.country_name), [members]);
+  useEffect(() => {
+    const unmatched = memberNames.filter(
+      (memberName) =>
+        !countries.some((country) =>
+          matchesCountry(String(country.properties?.name ?? ""), memberName),
+        ),
+    );
+    if (unmatched.length) {
+      console.warn("Globe member countries missing from world-atlas:", unmatched);
+    }
+  }, [countries, memberNames]);
   const arcs = useMemo(() => {
-    const top = points[0];
-    if (!top) return [];
-    const network = points.slice(1).map((point) => ({
-      startLat: top.lat,
-      startLng: top.lng,
+    const hub = points.find((point) => point.country_code.toUpperCase() === "KR") ?? points[0];
+    if (!hub) return [];
+    const hubArcs = points
+      .filter((point) => point !== hub)
+      .map((point) => ({
+        startLat: point.lat,
+        startLng: point.lng,
+        endLat: hub.lat,
+        endLng: hub.lng,
+      }));
+    const consecutiveArcs = points.slice(1).map((point, index) => ({
+      startLat: points[index].lat,
+      startLng: points[index].lng,
       endLat: point.lat,
       endLng: point.lng,
     }));
-    return points.slice(1).reduce((result, point, index) => {
-      const next = points[index + 2];
-      if (next) {
-        result.push({
-          startLat: point.lat,
-          startLng: point.lng,
-          endLat: next.lat,
-          endLng: next.lng,
-        });
-      }
-      return result;
-    }, network);
+    return [...hubArcs, ...consecutiveArcs];
   }, [points]);
+
+  const applyGlobeView = useCallback(() => {
+    const globe = globeRef.current;
+    const controls = globe?.controls?.();
+    if (!globe || !controls) return false;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.45;
+    controls.enableZoom = false;
+    globe.pointOfView({ lat: 25, lng: 105, altitude: 1.55 });
+    return true;
+  }, []);
 
   useEffect(() => {
     const node = wrapperRef.current;
     if (!node) return;
-    const observer = new ResizeObserver(([entry]) => setWidth(Math.floor(entry.contentRect.width)));
+    const observer = new ResizeObserver(([entry]) => {
+      setDimensions({
+        width: Math.floor(entry.contentRect.width),
+        height: Math.floor(entry.contentRect.height),
+      });
+    });
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (width === 0) return;
-    const timer = setInterval(() => {
-      const globe = globeRef.current;
-      if (!globe) return;
-      const controls = globe.controls();
-      if (!controls) return;
-      controls.autoRotate = true;
-      controls.autoRotateSpeed = 0.6;
-      controls.enableZoom = false;
-      globe.pointOfView({ lat: 30, lng: 110, altitude: 1.7 });
-      clearInterval(timer);
-    }, 100);
-    return () => clearInterval(timer);
-  }, [width]);
+    if (!dimensions.width || !dimensions.height) return;
+    let frame = 0;
+    const sync = () => {
+      if (!applyGlobeView()) frame = requestAnimationFrame(sync);
+    };
+    sync();
+    return () => cancelAnimationFrame(frame);
+  }, [applyGlobeView, dimensions]);
 
   return (
-    <div ref={wrapperRef} className="h-[520px] w-full">
-      {width > 0 ? (
+    <div
+      ref={wrapperRef}
+      className="bg-surface relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-media)] lg:aspect-square"
+    >
+      {dimensions.width > 0 && dimensions.height > 0 ? (
         <GlobeImpl
           ref={globeRef}
-          width={width}
-          height={520}
+          width={dimensions.width}
+          height={dimensions.height}
           backgroundColor="rgba(0,0,0,0)"
           globeMaterial={globeMaterial}
           showAtmosphere
-          atmosphereColor="#ff1a00"
-          atmosphereAltitude={0.08}
-          showGraticules
-          pointLabel={(d) =>
-            `${(d as CountryMembers).country_name}: ${(d as CountryMembers).members}`
-          }
+          atmosphereColor="#e8e8e3"
+          atmosphereAltitude={0.15}
+          onGlobeReady={applyGlobeView}
+          hexPolygonsData={countries}
+          hexPolygonResolution={3}
+          hexPolygonMargin={0.62}
+          hexPolygonUseDots
+          hexPolygonColor={(polygon) => {
+            const name = String(
+              (polygon as { properties?: { name?: string } }).properties?.name ?? "",
+            );
+            const active = memberNames.some((country) => matchesCountry(name, country));
+            return active ? "#ff1a00" : "rgba(232,232,227,0.55)";
+          }}
           pointsData={points}
           pointsMerge={false}
           pointLat="lat"
           pointLng="lng"
-          pointAltitude={0.01}
-          pointRadius="size"
+          pointAltitude={0.012}
+          pointRadius={(point) => 0.22 + Math.sqrt((point as Point).members) * 0.1}
           pointColor={() => "#ff1a00"}
           ringsData={points}
           ringLat="lat"
           ringLng="lng"
-          ringColor={() => "#ff1a00"}
-          ringMaxRadius={6}
-          ringPropagationSpeed={2}
-          ringRepeatPeriod={1800}
+          ringColor={() => (t: number) => `rgba(255,26,0,${1 - t})`}
+          ringMaxRadius={4}
+          ringPropagationSpeed={1.4}
+          ringRepeatPeriod={2200}
           arcsData={arcs}
-          arcColor={() => "#ff1a00"}
-          arcStroke={0.4}
-          arcDashLength={0.4}
-          arcDashGap={0.6}
-          arcDashAnimateTime={1800}
+          arcColor={() => ["rgba(232,232,227,0.0)", "rgba(232,232,227,0.9)", "rgba(255,26,0,0.9)"]}
+          arcStroke={0.35}
+          arcAltitudeAutoScale={0.35}
+          arcDashLength={0.35}
+          arcDashGap={0.9}
+          arcDashAnimateTime={2600}
+          labelsData={points}
+          labelLat="lat"
+          labelLng="lng"
+          labelText="country_name"
+          labelSize={0.9}
+          labelDotRadius={0}
+          labelColor={() => "rgba(232,232,227,0.85)"}
+          labelResolution={2}
+          labelAltitude={0.03}
+          pointLabel={(point) => {
+            const row = point as Point;
+            return `${row.country_name}: ${row.members}`;
+          }}
           enablePointerInteraction
         />
       ) : null}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,transparent_45%,rgba(8,8,7,.42)_100%)]" />
     </div>
   );
 }

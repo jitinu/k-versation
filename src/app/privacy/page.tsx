@@ -1,8 +1,9 @@
 export const metadata = { title: "Privacy", description: "K-VERSATION privacy policy." };
 export default function Privacy() {
   return (
-    <div className="page section-gap max-w-3xl pt-40 normal-case">
-      <h1 className="mb-12 text-6xl">Privacy</h1>
+    <div data-theme="ivory" className="page section-gap max-w-3xl normal-case">
+      <p className="eyebrow">The fine print</p>
+      <h1 className="mt-6 mb-12 text-5xl tracking-[-0.03em] md:text-7xl">Privacy</h1>
       <div className="text-ink-2 space-y-8">
         <section>
           <h2 className="text-ink text-2xl">Information we collect</h2>

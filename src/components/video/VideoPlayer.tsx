@@ -14,7 +14,7 @@ export function VideoPlayer({ video }: { video: Video }) {
     });
   }
   return (
-    <div className="relative aspect-video bg-black">
+    <div className="bg-surface relative aspect-video overflow-hidden rounded-[var(--radius-media)]">
       <video
         ref={ref}
         className="h-full w-full"
@@ -37,7 +37,7 @@ export function VideoPlayer({ video }: { video: Video }) {
           data-cursor="play"
           aria-label="Play video"
           onClick={play}
-          className="border-signal text-signal absolute top-1/2 left-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center border text-3xl"
+          className="btn btn-primary absolute top-1/2 left-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 p-0 text-3xl"
         >
           ▶
         </button>

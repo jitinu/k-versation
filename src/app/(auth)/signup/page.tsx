@@ -89,7 +89,9 @@ export default function SignupPage() {
         {usernameStatus && <p className="text-ink-2 text-xs normal-case">{usernameStatus}</p>}
         <input name="password" type="password" minLength={6} placeholder="Password" required />
         {error && <p className="text-signal normal-case">{error}</p>}
-        <button className="border-signal text-signal border px-4 py-3">Create account</button>
+        <button className="btn btn-primary">
+          Create account <span className="arrow">↗</span>
+        </button>
       </form>
     </AuthLayout>
   );

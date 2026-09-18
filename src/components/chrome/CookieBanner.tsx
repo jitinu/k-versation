@@ -20,12 +20,12 @@ export function CookieBanner() {
   const accepted = useSyncExternalStore(subscribe, getSnapshot, () => true);
   if (accepted) return null;
   return (
-    <aside className="border-signal bg-canvas fixed bottom-4 left-4 z-50 max-w-sm border p-4 text-xs">
+    <aside className="border-line bg-canvas fixed bottom-4 left-4 z-50 max-w-sm rounded-[var(--radius-media)] border p-4 text-xs">
       <p className="normal-case">
         We use essential cookies and privacy-friendly analytics to keep K-VERSATION running.
       </p>
-      <button className="border-signal text-signal mt-4 border px-3 py-2" onClick={accept}>
-        Accept
+      <button className="btn btn-primary mt-4 px-3 py-2" onClick={accept}>
+        Accept <span className="arrow">↗</span>
       </button>
     </aside>
   );

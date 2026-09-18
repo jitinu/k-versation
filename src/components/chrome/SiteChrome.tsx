@@ -6,6 +6,8 @@ import { CornerNav } from "./CornerNav";
 import { FooterStrip } from "./FooterStrip";
 import { CookieBanner } from "./CookieBanner";
 import { ImpressionTracker } from "./ImpressionTracker";
+import { ThemeScroller } from "@/components/motion/ThemeScroller";
+import { PageTransition } from "@/components/motion/PageTransition";
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
@@ -13,13 +15,10 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
       <SmoothScroll />
       <Cursor />
       <CornerNav />
-      <aside
-        aria-hidden="true"
-        className="border-signal text-signal fixed top-8 right-8 z-40 hidden border px-3 py-2 text-xs md:block"
-      >
-        Korean culture · Bay Area · Est. 2024
-      </aside>
-      <main className="min-h-[100dvh] pt-24 pb-24 md:pt-44">{children}</main>
+      <ThemeScroller />
+      <main className="min-h-[100dvh] pt-[88px] md:pt-[104px]">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <FooterStrip />
       <CookieBanner />
       <ImpressionTracker />

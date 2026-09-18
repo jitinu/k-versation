@@ -46,7 +46,9 @@ export default function LoginPage() {
           <input name="password" type="password" required />
         </label>
         {error && <p className="text-signal normal-case">{error}</p>}
-        <button className="border-signal text-signal border px-4 py-3">Sign in</button>
+        <button className="btn btn-primary">
+          Sign in <span className="arrow">↗</span>
+        </button>
         <p className="text-xs">
           <Link className="link-draw" href="/signup">
             Create account
@@ -62,8 +64,9 @@ export default function LoginPage() {
 }
 export function AuthLayout({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="page section-gap mx-auto max-w-xl pt-40">
-      <h1 className="mb-12 text-5xl">{title}</h1>
+    <div data-theme="ivory" className="page section-gap mx-auto max-w-xl">
+      <p className="eyebrow">K-VERSATION member access</p>
+      <h1 className="mt-6 mb-12 text-5xl tracking-[-0.03em] md:text-7xl">{title}</h1>
       {children}
     </div>
   );

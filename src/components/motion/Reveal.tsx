@@ -6,21 +6,21 @@ export function Reveal({
   children,
   delay = 0,
   className = "",
+  variant = "up",
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  variant?: "up" | "mask" | "fade";
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    node.dataset.reveal = "";
-    if (delay) node.style.transitionDelay = `${delay}ms`;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          node.classList.add("is-inview");
+          node.firstElementChild?.classList.add("is-inview");
           observer.disconnect();
         }
       },
@@ -28,10 +28,12 @@ export function Reveal({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [delay]);
+  }, [delay, variant]);
   return (
     <div ref={ref} className={className}>
-      {children}
+      <div data-reveal={variant} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
+        {children}
+      </div>
     </div>
   );
 }

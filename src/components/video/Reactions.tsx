@@ -70,7 +70,7 @@ export function Reactions({ videoId, stats }: { videoId: string; stats: VideoSta
       {reactions.map(([kind, emoji]) => (
         <button
           key={kind}
-          className="border-line border px-3 py-2 text-sm"
+          className="btn btn-ghost px-3 py-2 text-sm"
           aria-pressed={selected.has(kind)}
           onClick={() => toggle(kind)}
         >
