@@ -360,3 +360,26 @@
     cursor: none;
   }
 }
+
+.dive-hint {
+  transform-origin: top;
+  animation: dive-hint 1.6s var(--ease-out-expo) infinite;
+}
+
+@keyframes dive-hint {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  51% {
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}

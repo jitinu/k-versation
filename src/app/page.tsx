@@ -4,9 +4,72 @@ import { Parallax } from "@/components/motion/Parallax";
 import { Reveal } from "@/components/motion/Reveal";
 import { SplitText } from "@/components/motion/SplitText";
 import Globe from "@/components/Globe";
+import { TimeDive, type Era } from "@/components/home/TimeDive";
 import { Carousel } from "@/components/video/Carousel";
 import { VideoCard } from "@/components/video/VideoCard";
 import { getLatest, getMembersByCountry, getSiteNumbers, listVideos } from "@/lib/data";
+
+const eras: Era[] = [
+  {
+    year: "Today",
+    place: "Seoul",
+    line: "Today Korea is everywhere: on your phone, your playlist, your plate.",
+    src: "/timeline/era-01.jpg",
+    alt: "Seoul skyline at dusk, Samseong-dong towers seen from Bongeunsa temple",
+  },
+  {
+    year: "2002",
+    place: "Seoul Plaza",
+    line: "In 2002 an entire country wore red and shouted with one voice.",
+    src: "/timeline/era-02.jpg",
+    alt: "Crowds in red filling Seoul Plaza during the 2002 FIFA World Cup",
+  },
+  {
+    year: "1988",
+    place: "Olympic Stadium",
+    line: "In 1988 Seoul lit a torch and introduced itself to the world.",
+    src: "/timeline/era-03.jpg",
+    alt: "The Olympic torch burning at the 1988 Seoul Olympic Games",
+  },
+  {
+    year: "1970s",
+    place: "Han River",
+    line: "Bridges, factories, ambition. The miracle on the Han was built one shift at a time.",
+    src: "/timeline/era-04.jpg",
+    alt: "Aerial photograph of Yanghwa Bridge over the Han River in the 1970s",
+  },
+  {
+    year: "1968",
+    place: "Namdaemun Market",
+    line: "Before the skyline there were markets, and people carrying them on their backs.",
+    src: "/timeline/era-05.jpg",
+    alt: "A porter carrying goods through Namdaemun Market in 1968",
+  },
+  {
+    year: "1950",
+    place: "Seoul",
+    line: "In 1950 the country was torn in two. Every Korean family still carries that memory.",
+    src: "/timeline/era-06.jpg",
+    alt: "Soldiers moving through the streets of Seoul during the Korean War",
+  },
+  {
+    year: "15 August 1948",
+    place: "Sejong-daero",
+    line: "In 1948 a nation started over with almost nothing but each other.",
+    src: "/timeline/era-07.jpg",
+    alt: "Crowds celebrating the inauguration of the Korean government in downtown Seoul, 1948",
+  },
+  {
+    year: "Since 1395",
+    place: "Gyeongbokgung",
+    line: "And beneath it all: six hundred years of palaces, hanbok, and stories still worth telling.",
+    src: "/timeline/era-08.jpg",
+    alt: "A woman in white hanbok walking through Gyeongbokgung Palace",
+  },
+];
+
+const closing =
+  "I'm Daniel Koo, a Korean American from the Bay Area. K-VERSATION is how I keep that conversation going.";
 
 export default async function Home() {
   const [conversation, monologue, conversations, monologues, numbers, members] = await Promise.all([
@@ -20,11 +83,10 @@ export default async function Home() {
 
   return (
     <>
-      <section
-        data-theme="ivory"
-        className="grain -mt-[88px] pt-[88px] md:-mt-[104px] md:pt-[104px]"
-      >
-        <div className="page flex min-h-[calc(100dvh-9rem)] flex-col justify-between pt-6 pb-16 md:pt-10">
+      <TimeDive eras={eras} closing={closing} />
+
+      <section data-theme="ivory" className="grain">
+        <div className="page flex min-h-[calc(100dvh-9rem)] flex-col justify-between pt-16 pb-16 md:pt-24">
           <div>
             <p className="eyebrow">K-VERSATION · Korean culture, in conversation</p>
             <div className="mt-10 max-w-4xl md:mt-14">
