@@ -6,6 +6,7 @@ import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeB
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { duration } from "@/components/video/VideoCard";
 import { getVideoBySlugOrId, getVideoStats } from "@/lib/data";
+import { siteConfig } from "@/lib/site";
 
 export async function generateMetadata({
   params,
@@ -17,7 +18,7 @@ export async function generateMetadata({
     ? {
         title: video.title,
         description: video.description,
-        openGraph: { images: [video.thumbnail_url] },
+        openGraph: { images: [new URL(video.thumbnail_url, siteConfig.url).toString()] },
       }
     : { title: "Video not found" };
 }

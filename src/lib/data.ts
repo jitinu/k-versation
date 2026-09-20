@@ -10,6 +10,20 @@ import type {
 const clamp = (value: number) => Math.max(0, Number(value) || 0);
 const fallbackStats: SiteNumbers = { impressions: 0, views: 0, members: 0, countries: 0 };
 
+export function toLocalMedia(url: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/$/, "");
+  if (!supabaseUrl || !url.startsWith(`${supabaseUrl}/storage/`)) return url;
+  return url.slice(supabaseUrl.length);
+}
+
+function normalizeVideo(video: Video): Video {
+  return {
+    ...video,
+    video_url: toLocalMedia(video.video_url),
+    thumbnail_url: toLocalMedia(video.thumbnail_url),
+  };
+}
+
 export async function listVideos(section?: VideoSection): Promise<Video[]> {
   if (!hasServerSupabaseEnv()) return [];
   const supabase = await createClient();
@@ -22,7 +36,7 @@ export async function listVideos(section?: VideoSection): Promise<Video[]> {
   const { data } = await query;
   const monthAgo = Date.now() - 30 * 86400000;
   return (data ?? []).map((video) => ({
-    ...video,
+    ...normalizeVideo(video as Video),
     view_offset: clamp(video.view_offset),
     comment_offset: clamp(video.comment_offset),
     is_new: new Date(video.published_at).getTime() >= monthAgo,
@@ -48,7 +62,8 @@ export async function listPopular(section: VideoSection, limit: number): Promise
         (views.get(b.id) ?? 0) - (views.get(a.id) ?? 0) ||
         new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
     )
-    .slice(0, limit);
+    .slice(0, limit)
+    .map(normalizeVideo);
 }
 
 export async function getLatest(section: VideoSection) {
@@ -67,7 +82,7 @@ export async function getVideoBySlugOrId(idOrSlug: string): Promise<Video | null
     .maybeSingle();
   return data
     ? ({
-        ...data,
+        ...normalizeVideo(data as Video),
         view_offset: clamp(data.view_offset),
         comment_offset: clamp(data.comment_offset),
         is_new: new Date(data.published_at).getTime() >= Date.now() - 30 * 86400000,
