@@ -14,9 +14,10 @@ const GlobeImpl = dynamic(() => import("react-globe.gl"), { ssr: false });
 
 type Point = CountryMembers & { lat: number; lng: number; size: number };
 
-const GLOW = "#f2c27a";
-const GLOW_RGB = "242,194,122";
-const IVORY_RGB = "232,232,227";
+const RED = "#cd2e3a";
+const BLUE = "#0047a0";
+const WHITE = "#ffffff";
+const BLACK = "#0b0a09";
 
 const aliases: Record<string, string[]> = {
   "United States": ["United States of America"],
@@ -40,12 +41,13 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const [hoveredCountry, setHoveredCountry] = useState<object | null>(null);
   const globeMaterial = useMemo(
     () =>
       new MeshPhongMaterial({
-        color: "#100f0d",
-        emissive: "#0b0a09",
-        specular: "#3a3630",
+        color: BLACK,
+        emissive: "#050505",
+        specular: "#1c1c1c",
         shininess: 14,
       }),
     [],
@@ -157,7 +159,7 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           backgroundColor="rgba(0,0,0,0)"
           globeMaterial={globeMaterial}
           showAtmosphere
-          atmosphereColor={GLOW}
+          atmosphereColor={BLUE}
           atmosphereAltitude={0.12}
           onGlobeReady={applyGlobeView}
           hexPolygonsData={countries}
@@ -175,28 +177,28 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
               (polygon as { properties?: { name?: string } }).properties?.name ?? "",
             );
             const active = memberNames.some((country) => matchesCountry(name, country));
-            return active ? GLOW : `rgba(${IVORY_RGB},0.42)`;
+            if (polygon === hoveredCountry) return "rgba(255,255,255,0.72)";
+            if (!active) return "rgba(255,255,255,0.10)";
+            const southKorea = ["south korea", "republic of korea"].includes(name.toLowerCase());
+            return southKorea ? RED : BLUE;
           }}
+          onHexPolygonHover={(polygon) => setHoveredCountry(polygon)}
           pointsData={points}
           pointsMerge={false}
           pointLat="lat"
           pointLng="lng"
           pointAltitude={(point) => 0.02 + Math.sqrt((point as Point).members) * 0.012}
           pointRadius={(point) => 0.18 + Math.sqrt((point as Point).members) * 0.08}
-          pointColor={() => "#fff1d6"}
+          pointColor={() => WHITE}
           ringsData={points}
           ringLat="lat"
           ringLng="lng"
-          ringColor={() => (t: number) => `rgba(${GLOW_RGB},${(1 - t) * 0.8})`}
+          ringColor={() => (t: number) => `rgba(205,46,58,${(1 - t) * 0.8})`}
           ringMaxRadius={(point) => 2.5 + Math.sqrt((point as Point).members) * 0.9}
           ringPropagationSpeed={1.1}
           ringRepeatPeriod={2600}
           arcsData={arcs}
-          arcColor={() => [
-            `rgba(${IVORY_RGB},0)`,
-            `rgba(${GLOW_RGB},0.95)`,
-            `rgba(${IVORY_RGB},0)`,
-          ]}
+          arcColor={() => ["rgba(255,255,255,0)", RED, "rgba(255,255,255,0)"]}
           arcStroke={0.28}
           arcAltitudeAutoScale={0.4}
           arcDashLength={0.3}
@@ -209,7 +211,7 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           labelText="country_name"
           labelSize={1.1}
           labelDotRadius={0}
-          labelColor={() => `rgba(${IVORY_RGB},0.8)`}
+          labelColor={() => "rgba(255,255,255,0.85)"}
           labelResolution={2}
           labelAltitude={0.045}
           pointLabel={(point) => {
@@ -219,7 +221,7 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           enablePointerInteraction
         />
       ) : null}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(242,194,122,.08)_0%,transparent_38%,rgba(8,8,7,.5)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,71,160,.08)_0%,transparent_38%,rgba(8,8,7,.5)_100%)]" />
     </div>
   );
 }

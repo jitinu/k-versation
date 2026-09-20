@@ -40,7 +40,7 @@ export type Comment = {
 
 export type Reaction = {
   video_id: string;
-  subscriber_id: string;
+  actor_id: string;
   kind: ReactionKind;
   created_at: string;
 };
@@ -83,9 +83,25 @@ export type Database = {
         Relationships: [];
       };
       comments: {
-        Row: Omit<Comment, "author_name"> & { subscriber_id: string };
-        Insert: { video_id: string; subscriber_id: string; body: string };
-        Update: Partial<{ video_id: string; subscriber_id: string; body: string }>;
+        Row: Omit<Comment, "author_name"> & {
+          subscriber_id: string | null;
+          actor_id: string;
+          author_name: string | null;
+        };
+        Insert: {
+          video_id: string;
+          subscriber_id?: string | null;
+          actor_id: string;
+          author_name?: string | null;
+          body: string;
+        };
+        Update: Partial<{
+          video_id: string;
+          subscriber_id: string | null;
+          actor_id: string;
+          author_name: string | null;
+          body: string;
+        }>;
         Relationships: [];
       };
       site_stats: {

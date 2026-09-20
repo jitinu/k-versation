@@ -1,24 +1,52 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { useSubscribe } from "@/components/subscribe/SubscribeProvider";
 import type { Comment } from "@/lib/supabase/types";
 import { createClient, hasSupabaseEnv } from "@/lib/supabase/client";
 
 export function Comments({ videoId }: { videoId: string }) {
-  const { subscriber, open } = useSubscribe();
   const [body, setBody] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!hasSupabaseEnv()) return;
-    void createClient()
-      .from("comments_public")
-      .select("*")
-      .eq("video_id", videoId)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => setComments((data ?? []) as Comment[]));
+    const client = createClient();
+    const load = async () => {
+      const { data } = await client
+        .from("comments_public")
+        .select("*")
+        .eq("video_id", videoId)
+        .order("created_at", { ascending: false });
+      if (data) setComments(data as Comment[]);
+    };
+    const channel = client
+      .channel(`comments:${videoId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "comments", filter: `video_id=eq.${videoId}` },
+        async (payload) => {
+          const { data } = await client
+            .from("comments_public")
+            .select("*")
+            .eq("id", payload.new.id)
+            .single();
+          if (data) {
+            setComments((current) =>
+              current.some((comment) => comment.id === data.id)
+                ? current
+                : [data as Comment, ...current],
+            );
+          }
+        },
+      )
+      .subscribe();
+    const interval = window.setInterval(() => void load(), 20_000);
+    void load();
+    return () => {
+      window.clearInterval(interval);
+      void client.removeChannel(channel);
+    };
   }, [videoId]);
 
   async function performSubmit() {
@@ -40,10 +68,6 @@ export function Comments({ videoId }: { videoId: string }) {
   function submit(event: FormEvent) {
     event.preventDefault();
     if (!body.trim()) return;
-    if (!subscriber) {
-      open(() => void performSubmit());
-      return;
-    }
     void performSubmit();
   }
 

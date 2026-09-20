@@ -29,6 +29,28 @@ export async function listVideos(section?: VideoSection): Promise<Video[]> {
   })) as Video[];
 }
 
+export async function listPopular(section: VideoSection, limit: number): Promise<Video[]> {
+  const videos = await listVideos(section);
+  if (!videos.length || !hasServerSupabaseEnv()) return videos.slice(0, limit);
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("video_display_stats")
+    .select("video_id, views")
+    .in(
+      "video_id",
+      videos.map((video) => video.id),
+    );
+  const views = new Map((data ?? []).map((row) => [row.video_id, Number(row.views) || 0]));
+  return videos
+    .slice()
+    .sort(
+      (a, b) =>
+        (views.get(b.id) ?? 0) - (views.get(a.id) ?? 0) ||
+        new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+    )
+    .slice(0, limit);
+}
+
 export async function getLatest(section: VideoSection) {
   return (await listVideos(section))[0] ?? null;
 }

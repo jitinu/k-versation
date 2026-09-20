@@ -2,7 +2,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SplitText } from "@/components/motion/SplitText";
 import { Carousel } from "@/components/video/Carousel";
 import { VideoCard } from "@/components/video/VideoCard";
-import { listVideos } from "@/lib/data";
+import { listPopular, listVideos } from "@/lib/data";
 
 export const metadata = {
   title: "Conversations",
@@ -10,7 +10,10 @@ export const metadata = {
 };
 
 export default async function Conversations() {
-  const videos = await listVideos("conversation");
+  const [videos, popular] = await Promise.all([
+    listVideos("conversation"),
+    listPopular("conversation", 6),
+  ]);
   return (
     <div data-theme="ivory">
       <div className="page section-gap">
@@ -22,7 +25,7 @@ export default async function Conversations() {
         {videos.length ? (
           <>
             <div className="mt-24">
-              <Carousel title="Popular now" videos={videos.slice(0, 6)} />
+              <Carousel title="Popular now" videos={popular} autoplay />
             </div>
             <div className="mt-24 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {videos.map((video, index) => (

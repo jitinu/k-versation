@@ -47,6 +47,7 @@ export function frame(camera: number, index: number, count: number) {
 export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const overlayRefs = useRef<(HTMLDivElement | null)[]>([]);
   const captionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const closingRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLDivElement>(null);
@@ -68,8 +69,9 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
         );
         layer.style.transform = `translate3d(0,0,0) scale(${scale.toFixed(4)})`;
         layer.style.opacity = opacity.toFixed(3);
-        layer.style.filter = `brightness(${(0.35 + brightness * 0.65).toFixed(3)})`;
         layer.style.visibility = opacity <= 0.001 ? "hidden" : "visible";
+        const overlay = overlayRefs.current[index];
+        if (overlay) overlay.style.opacity = (1 - (0.35 + brightness * 0.65)).toFixed(3);
 
         const caption = captionRefs.current[index];
         if (!caption) return;
@@ -96,21 +98,25 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
       trigger: wrap,
       start: "top top",
       end: "bottom bottom",
-      scrub: true,
+      scrub: 0.6,
       onUpdate: (self) => render(self.progress),
     });
     render(0);
 
     // Trackpad pinch arrives as ctrl+wheel; turn it into a dive through the timeline.
+    let pinchTarget: number | null = null;
     const onWheel = (event: WheelEvent) => {
       if (!event.ctrlKey) return;
       const rect = wrap.getBoundingClientRect();
       if (rect.top > 0 || rect.bottom < window.innerHeight) return;
       event.preventDefault();
       const delta = -event.deltaY * 6;
-      const target = window.scrollY + delta;
-      if (window.__lenis) window.__lenis.scrollTo(target, { duration: 0.6 });
-      else window.scrollBy({ top: delta });
+      if (window.__lenis) {
+        pinchTarget = (pinchTarget ?? window.scrollY) + delta;
+        window.__lenis.scrollTo(pinchTarget, { lerp: 0.12 });
+      } else {
+        window.scrollBy({ top: delta });
+      }
     };
     window.addEventListener("wheel", onWheel, { passive: false });
 
@@ -137,35 +143,41 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
       style={{ height: `${(count + 1) * 100}vh` }}
     >
       <div className="sticky top-0 h-[100dvh] overflow-hidden">
-        {eras.map((era, index) => (
-          <div
-            key={era.src}
-            ref={(node) => {
-              layerRefs.current[index] = node;
-            }}
-            className="absolute inset-0 origin-center will-change-transform"
-            style={(() => {
-              const initial = frame(0, index, count);
-              return {
+        {eras.map((era, index) => {
+          const initial = frame(0, index, count);
+          return (
+            <div
+              key={era.src}
+              ref={(node) => {
+                layerRefs.current[index] = node;
+              }}
+              className="absolute inset-0 origin-center will-change-transform"
+              style={{
                 zIndex: count - index,
                 transform: `translate3d(0,0,0) scale(${initial.scale.toFixed(4)})`,
                 opacity: initial.opacity,
-                filter: `brightness(${(0.35 + initial.brightness * 0.65).toFixed(3)})`,
                 visibility: initial.opacity <= 0.001 ? "hidden" : "visible",
-              };
-            })()}
-          >
-            <Image
-              src={era.src}
-              alt={era.alt}
-              fill
-              priority={index < 2}
-              sizes="100vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#080807]/80 via-[#080807]/20 to-[#080807]/40" />
-          </div>
-        ))}
+              }}
+            >
+              <Image
+                src={era.src}
+                alt={era.alt}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover"
+              />
+              <div
+                ref={(node) => {
+                  overlayRefs.current[index] = node;
+                }}
+                className="pointer-events-none absolute inset-0 bg-black"
+                style={{ opacity: 1 - (0.35 + initial.brightness * 0.65) }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#080807]/80 via-[#080807]/20 to-[#080807]/40" />
+            </div>
+          );
+        })}
 
         <div className="grain pointer-events-none absolute inset-0 z-[60]" />
 

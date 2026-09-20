@@ -10,10 +10,12 @@ export function VideoCard({
   video,
   featured = false,
   variant = "default",
+  showTitle = true,
 }: {
   video: Video;
   featured?: boolean;
   variant?: "default" | "portrait";
+  showTitle?: boolean;
 }) {
   return (
     <Link
@@ -40,18 +42,22 @@ export function VideoCard({
           )}
           <span>{duration(video.duration_seconds)}</span>
         </div>
-        <h3
-          className={`font-display normal-case ${
-            featured
-              ? "text-4xl md:text-6xl lg:text-7xl"
-              : variant === "portrait"
-                ? "text-2xl leading-[1.05] md:text-[28px]"
-                : "text-2xl md:text-3xl"
-          }`}
-        >
-          {video.title}
-        </h3>
-        {video.subtitle && <p className="mt-2 text-xs text-[#e8e8e3]/75">{video.subtitle}</p>}
+        {showTitle ? (
+          <>
+            <h3
+              className={`font-display leading-[1.05] normal-case ${
+                featured
+                  ? "text-3xl md:text-5xl"
+                  : variant === "portrait"
+                    ? "text-2xl md:text-[28px]"
+                    : "text-2xl md:text-3xl"
+              }`}
+            >
+              {video.title}
+            </h3>
+            {video.subtitle && <p className="mt-2 text-xs text-[#e8e8e3]/75">{video.subtitle}</p>}
+          </>
+        ) : null}
       </div>
     </Link>
   );

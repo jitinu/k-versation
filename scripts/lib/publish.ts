@@ -152,30 +152,23 @@ export function extractPoster(file: string, output: string, options: PosterOptio
       }
     }
     if (options.fallbackText) {
-      const titleFile = path.join(os.tmpdir(), `kv-poster-title-${process.pid}-${Date.now()}.txt`);
-      fs.writeFileSync(titleFile, options.fallbackText, "utf8");
-      try {
-        execFileSync("ffmpeg", [
-          "-y",
-          "-loglevel",
-          "error",
-          "-f",
-          "lavfi",
-          "-i",
-          "color=c=0x24211c:s=1280x720:d=1",
-          "-vf",
-          "drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:textfile=" +
-            `${titleFile}:fontcolor=0xf2c27a:fontsize=64:x=(w-text_w)/2:y=(h-text_h)/2:box=1:boxcolor=0x100f0dcc:boxborderw=24`,
-          "-frames:v",
-          "1",
-          "-q:v",
-          "3",
-          output,
-        ]);
-        return { output, meanLuma: meanLuma(output), attempt: null, fallback: true };
-      } finally {
-        fs.rmSync(titleFile, { force: true });
-      }
+      execFileSync("ffmpeg", [
+        "-y",
+        "-loglevel",
+        "error",
+        "-f",
+        "lavfi",
+        "-i",
+        "color=c=0x24211c:s=1280x720:d=1",
+        "-vf",
+        "drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf:text=K-VERSATION:fontcolor=0xf2c27a:fontsize=28:x=96:y=80",
+        "-frames:v",
+        "1",
+        "-q:v",
+        "3",
+        output,
+      ]);
+      return { output, meanLuma: meanLuma(output), attempt: null, fallback: true };
     }
     throw new Error(`No usable poster frame found for ${file}`);
   } finally {

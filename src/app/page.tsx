@@ -143,7 +143,7 @@ export default async function Home() {
             <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:items-center">
               <div className="lg:col-span-7">
                 <Reveal variant="mask">
-                  <VideoCard video={intro} featured />
+                  <VideoCard video={intro} featured showTitle={false} />
                 </Reveal>
               </div>
               <div className="lg:col-span-5">
@@ -262,7 +262,10 @@ export default async function Home() {
           </h2>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link href="/conversations" className="btn btn-primary">
-              Start watching <span className="arrow">↗</span>
+              Start watching Conversations <span className="arrow">↗</span>
+            </Link>
+            <Link href="/monologues" className="btn btn-primary">
+              Start watching Monologues <span className="arrow">↗</span>
             </Link>
             <SubscribeEpisodeButton />
           </div>
