@@ -40,6 +40,23 @@ npx tsx scripts/add-video.ts \
 
 The script uses `ffprobe`, uploads the video and thumbnail to Supabase Storage, and creates the video record. Add `--thumbnail ./thumbnail.jpg` to provide a specific thumbnail. Without it, it extracts a frame at three seconds with `ffmpeg`. You can also upload media yourself and insert a row into `videos` in the SQL editor.
 
+### Publishing many videos at once
+
+Prepare a JSON manifest containing `file`, `section`, `publish`, `title`, `subtitle`, and
+`description` for each video. Source files are located recursively by basename under the
+attachments directory. The batch publisher transcodes each source to H.264/AAC MP4, creates a
+non-black poster under `/home/ubuntu/posters-final/`, uploads both assets to local Supabase
+Storage, and upserts the video metadata by slug:
+
+```bash
+npx tsx scripts/publish-manifest.ts \
+  --manifest /home/ubuntu/content/manifest.json \
+  --dir /home/ubuntu/attachments
+```
+
+For one-off publishing, use `scripts/add-video.ts`. Both commands share the implementation in
+`scripts/lib/publish.ts`.
+
 ## Host mode
 
 Visit `/host` and enter `HOST_PASSWORD`. Host mode shows subscriber growth, exports subscriber CSV, and adjusts displayed site and video numbers. Negative offsets are allowed but public numbers are clamped at zero.

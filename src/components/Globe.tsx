@@ -14,6 +14,10 @@ const GlobeImpl = dynamic(() => import("react-globe.gl"), { ssr: false });
 
 type Point = CountryMembers & { lat: number; lng: number; size: number };
 
+const GLOW = "#f2c27a";
+const GLOW_RGB = "242,194,122";
+const IVORY_RGB = "232,232,227";
+
 const aliases: Record<string, string[]> = {
   "United States": ["United States of America"],
   "South Korea": ["South Korea", "Republic of Korea"],
@@ -39,9 +43,10 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
   const globeMaterial = useMemo(
     () =>
       new MeshPhongMaterial({
-        color: "#141311",
-        emissive: "#0a0a09",
-        shininess: 6,
+        color: "#100f0d",
+        emissive: "#0b0a09",
+        specular: "#3a3630",
+        shininess: 14,
       }),
     [],
   );
@@ -108,7 +113,9 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
     const controls = globe?.controls?.();
     if (!globe || !controls) return false;
     controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.45;
+    controls.autoRotateSpeed = 0.35;
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
     controls.enableZoom = false;
     globe.pointOfView({ lat: 25, lng: 105, altitude: 1.55 });
     return true;
@@ -150,50 +157,61 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           backgroundColor="rgba(0,0,0,0)"
           globeMaterial={globeMaterial}
           showAtmosphere
-          atmosphereColor="#e8e8e3"
-          atmosphereAltitude={0.15}
+          atmosphereColor={GLOW}
+          atmosphereAltitude={0.12}
           onGlobeReady={applyGlobeView}
           hexPolygonsData={countries}
           hexPolygonResolution={3}
-          hexPolygonMargin={0.62}
+          hexPolygonMargin={0.68}
           hexPolygonUseDots
+          hexPolygonAltitude={(polygon) => {
+            const name = String(
+              (polygon as { properties?: { name?: string } }).properties?.name ?? "",
+            );
+            return memberNames.some((country) => matchesCountry(name, country)) ? 0.006 : 0.001;
+          }}
           hexPolygonColor={(polygon) => {
             const name = String(
               (polygon as { properties?: { name?: string } }).properties?.name ?? "",
             );
             const active = memberNames.some((country) => matchesCountry(name, country));
-            return active ? "#ff1a00" : "rgba(232,232,227,0.55)";
+            return active ? GLOW : `rgba(${IVORY_RGB},0.42)`;
           }}
           pointsData={points}
           pointsMerge={false}
           pointLat="lat"
           pointLng="lng"
-          pointAltitude={0.012}
-          pointRadius={(point) => 0.22 + Math.sqrt((point as Point).members) * 0.1}
-          pointColor={() => "#ff1a00"}
+          pointAltitude={(point) => 0.02 + Math.sqrt((point as Point).members) * 0.012}
+          pointRadius={(point) => 0.18 + Math.sqrt((point as Point).members) * 0.08}
+          pointColor={() => "#fff1d6"}
           ringsData={points}
           ringLat="lat"
           ringLng="lng"
-          ringColor={() => (t: number) => `rgba(255,26,0,${1 - t})`}
-          ringMaxRadius={4}
-          ringPropagationSpeed={1.4}
-          ringRepeatPeriod={2200}
+          ringColor={() => (t: number) => `rgba(${GLOW_RGB},${(1 - t) * 0.8})`}
+          ringMaxRadius={(point) => 2.5 + Math.sqrt((point as Point).members) * 0.9}
+          ringPropagationSpeed={1.1}
+          ringRepeatPeriod={2600}
           arcsData={arcs}
-          arcColor={() => ["rgba(232,232,227,0.0)", "rgba(232,232,227,0.9)", "rgba(255,26,0,0.9)"]}
-          arcStroke={0.35}
-          arcAltitudeAutoScale={0.35}
-          arcDashLength={0.35}
-          arcDashGap={0.9}
-          arcDashAnimateTime={2600}
+          arcColor={() => [
+            `rgba(${IVORY_RGB},0)`,
+            `rgba(${GLOW_RGB},0.95)`,
+            `rgba(${IVORY_RGB},0)`,
+          ]}
+          arcStroke={0.28}
+          arcAltitudeAutoScale={0.4}
+          arcDashLength={0.3}
+          arcDashGap={1.2}
+          arcDashInitialGap={() => Math.random() * 2}
+          arcDashAnimateTime={3200}
           labelsData={points}
           labelLat="lat"
           labelLng="lng"
           labelText="country_name"
-          labelSize={0.9}
+          labelSize={1.1}
           labelDotRadius={0}
-          labelColor={() => "rgba(232,232,227,0.85)"}
+          labelColor={() => `rgba(${IVORY_RGB},0.8)`}
           labelResolution={2}
-          labelAltitude={0.03}
+          labelAltitude={0.045}
           pointLabel={(point) => {
             const row = point as Point;
             return `${row.country_name}: ${row.members}`;
@@ -201,7 +219,7 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           enablePointerInteraction
         />
       ) : null}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,transparent_45%,rgba(8,8,7,.42)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(242,194,122,.08)_0%,transparent_38%,rgba(8,8,7,.5)_100%)]" />
     </div>
   );
 }

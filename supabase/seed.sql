@@ -93,54 +93,6 @@ values
     'http://127.0.0.1:54321/storage/v1/object/public/thumbnails/thumbnails/hanbok-then-and-now.jpg',
     2520,
     '2026-04-12T00:00:00Z'
-  ),
-  (
-    '10000000-0000-0000-0000-000000000007',
-    'between-two-worlds',
-    'monologue',
-    'Between Two Worlds',
-    'A monologue on carrying home with you',
-    'A quiet monologue on heritage, memory, and finding a place between cultures without having to choose only one.',
-    'http://127.0.0.1:54321/storage/v1/object/public/videos/videos/between-two-worlds.mp4',
-    'http://127.0.0.1:54321/storage/v1/object/public/thumbnails/thumbnails/between-two-worlds.jpg?v=3',
-    720,
-    '2026-09-10T00:00:00Z'
-  ),
-  (
-    '10000000-0000-0000-0000-000000000008',
-    'why-i-started-k-versation',
-    'intro',
-    'Why I started K-VERSATION',
-    'A note on curiosity, culture, and making room for one more story',
-    'Daniel shares the personal question behind K-VERSATION and why the best way to understand a culture is often to listen first.',
-    'http://127.0.0.1:54321/storage/v1/object/public/videos/videos/between-two-worlds.mp4',
-    'http://127.0.0.1:54321/storage/v1/object/public/thumbnails/thumbnails/why-i-started-k-versation.jpg',
-    1440,
-    '2026-08-02T00:00:00Z'
-  ),
-  (
-    '10000000-0000-0000-0000-000000000009',
-    'the-sound-of-home',
-    'monologue',
-    'The sound of home',
-    'On accents, distance, and the voices we keep',
-    'A personal reflection on the sounds that follow us across oceans, and the moment a familiar voice can make any place feel close.',
-    'http://127.0.0.1:54321/storage/v1/object/public/videos/videos/between-two-worlds.mp4',
-    'http://127.0.0.1:54321/storage/v1/object/public/thumbnails/thumbnails/the-sound-of-home.jpg',
-    2160,
-    '2026-06-09T00:00:00Z'
-  ),
-  (
-    '10000000-0000-0000-0000-000000000010',
-    'a-seat-at-the-table',
-    'monologue',
-    'A seat at the table',
-    'The quiet politics of being welcomed in',
-    'Daniel considers the invitations, gestures, and everyday acts of generosity that turn a room into a community.',
-    'http://127.0.0.1:54321/storage/v1/object/public/videos/videos/between-two-worlds.mp4',
-    'http://127.0.0.1:54321/storage/v1/object/public/thumbnails/thumbnails/a-seat-at-the-table.jpg',
-    1740,
-    '2026-04-26T00:00:00Z'
   )
 on conflict (id) do update set
   slug = excluded.slug,

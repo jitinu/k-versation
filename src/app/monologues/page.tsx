@@ -15,7 +15,7 @@ export default async function Monologues() {
     <div data-theme="ivory">
       <div className="page section-gap">
         <p className="eyebrow">K-VERSATION monologues</p>
-        <h1 className="mt-8 text-5xl tracking-[-0.03em] md:text-7xl">
+        <h1 className="mt-8 text-4xl tracking-[-0.03em] sm:text-5xl md:text-7xl">
           <SplitText>Monologues</SplitText>
         </h1>
         <p className="eyebrow mt-6">{videos.length} monologues</p>
