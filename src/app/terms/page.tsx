@@ -9,7 +9,7 @@ export default function Terms() {
           <h2 className="text-ink text-2xl">Using K-VERSATION</h2>
           <p className="mt-3">
             K-VERSATION is a video and community publication. You may watch and share content for
-            personal, lawful purposes. Keep account details secure and do not impersonate another
+            personal, lawful purposes. Keep subscriber details secure and do not impersonate another
             person.
           </p>
         </section>
@@ -17,7 +17,7 @@ export default function Terms() {
           <h2 className="text-ink text-2xl">Community contributions</h2>
           <p className="mt-3">
             Comments must be relevant, respectful, and your own. We may remove content or suspend
-            accounts that abuse the service, violate rights, or create risk for other people.
+            subscriptions that abuse the service, violate rights, or create risk for other people.
           </p>
         </section>
         <section>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Comments } from "@/components/video/Comments";
 import { Reactions } from "@/components/video/Reactions";
-import { SubscribeButton } from "@/components/video/SubscribeButton";
+import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeButton";
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { duration } from "@/components/video/VideoCard";
 import { getVideoBySlugOrId, getVideoStats } from "@/lib/data";
@@ -47,7 +47,7 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Reactions videoId={video.id} stats={stats} />
-              <SubscribeButton />
+              <SubscribeEpisodeButton />
             </div>
             <Comments videoId={video.id} />
           </div>

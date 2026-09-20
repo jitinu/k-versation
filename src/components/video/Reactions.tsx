@@ -1,8 +1,9 @@
 "use client";
+
 import { useEffect, useState } from "react";
+import { useSubscribe } from "@/components/subscribe/SubscribeProvider";
 import type { ReactionKind, VideoStats } from "@/lib/supabase/types";
-import { useRequireAuth } from "@/components/auth/AuthGate";
-import { createClient, hasSupabaseEnv } from "@/lib/supabase/client";
+
 const reactions: [ReactionKind, string][] = [
   ["thumbs_up", "👍"],
   ["heart", "❤️"],
@@ -10,59 +11,44 @@ const reactions: [ReactionKind, string][] = [
   ["wow", "😮"],
   ["fire", "🔥"],
 ];
+
 export function Reactions({ videoId, stats }: { videoId: string; stats: VideoStats }) {
-  const gate = useRequireAuth();
+  const { subscriber, open } = useSubscribe();
   const [counts, setCounts] = useState(stats.reactions);
   const [selected, setSelected] = useState<Set<ReactionKind>>(new Set());
 
   useEffect(() => {
-    if (!hasSupabaseEnv()) return;
-    void createClient()
-      .auth.getUser()
-      .then(({ data: { user } }) => {
-        if (!user) return;
-        return createClient()
-          .from("reactions")
-          .select("kind")
-          .eq("video_id", videoId)
-          .eq("user_id", user.id)
-          .then(({ data }) => setSelected(new Set((data ?? []).map((row) => row.kind))));
-      });
+    void fetch(`/api/me?videoId=${videoId}`, { cache: "no-store" })
+      .then((response) => response.json())
+      .then((data: { reactions?: ReactionKind[] }) => setSelected(new Set(data.reactions ?? [])));
   }, [videoId]);
 
-  function toggle(kind: ReactionKind) {
-    gate(() => {
-      void (async () => {
-        const client = createClient();
-        const {
-          data: { user },
-        } = await client.auth.getUser();
-        if (!user) return;
-        const active = selected.has(kind);
-        const next = new Set(selected);
-        if (active) {
-          const { error } = await client
-            .from("reactions")
-            .delete()
-            .eq("video_id", videoId)
-            .eq("user_id", user.id)
-            .eq("kind", kind);
-          if (error) return;
-          next.delete(kind);
-        } else {
-          const { error } = await client
-            .from("reactions")
-            .insert({ video_id: videoId, user_id: user.id, kind });
-          if (error) return;
-          next.add(kind);
-        }
-        setSelected(next);
-        setCounts({
-          ...counts,
-          [kind]: Math.max(0, (counts[kind] ?? 0) + (active ? -1 : 1)),
-        });
-      })();
+  async function performAction(kind: ReactionKind) {
+    const response = await fetch("/api/reactions", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ videoId, kind }),
     });
+    if (!response.ok) return;
+    const data = (await response.json()) as {
+      active: boolean;
+      counts: Partial<Record<ReactionKind, number>>;
+    };
+    setSelected((current) => {
+      const next = new Set(current);
+      if (data.active) next.add(kind);
+      else next.delete(kind);
+      return next;
+    });
+    setCounts(data.counts);
+  }
+
+  function toggle(kind: ReactionKind) {
+    if (!subscriber) {
+      open(() => void performAction(kind));
+      return;
+    }
+    void performAction(kind);
   }
 
   return (

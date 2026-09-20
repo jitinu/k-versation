@@ -1,6 +1,6 @@
 # K-VERSATION
 
-K-VERSATION is a dark, editorial video site sharing Korean culture through conversations and monologues by Daniel Koo.
+K-VERSATION is an editorial video site sharing Korean culture through conversations and monologues by Daniel Koo.
 
 ## Run locally
 
@@ -13,19 +13,19 @@ K-VERSATION is a dark, editorial video site sharing Korean culture through conve
 | Variable | What it does |
 | --- | --- |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public Supabase browser key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key for counters and video uploads |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public Supabase browser key for video and comment reads |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key for subscribers, counters, comments, reactions, and video uploads |
 | `NEXT_PUBLIC_SITE_URL` | Canonical site URL |
 | `HOST_PASSWORD` | Password for `/host` |
 | `HOST_SESSION_SECRET` | Long random secret used for the host cookie |
-| `RESEND_API_KEY` | Enables the Questions email form |
+| `RESEND_API_KEY` | Enables the Questions email form; Resend is only used for Questions |
 | `QUESTIONS_TO_EMAIL` | Inbox receiving questions |
 | `QUESTIONS_FROM_EMAIL` | Verified Resend sender |
 | `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | Optional Plausible domain |
 
 ## Set up Supabase
 
-Create a Supabase project, then paste `supabase/migrations/0001_init.sql` into the Supabase SQL editor and run it. If you use the Supabase CLI instead, link the project and run `supabase db push`.
+Create a Supabase project, then paste `supabase/migrations/0001_init.sql` into the Supabase SQL editor and run it. If you use the Supabase CLI instead, link the project and run `supabase db push`. Visitors join a passwordless subscriber list with their email, name, country, and optional phone; a private token cookie identifies them for reactions and comments. Subscribers can be exported from host mode as CSV.
 
 ## Add a video
 
@@ -42,8 +42,8 @@ The script uses `ffprobe`, uploads the video and thumbnail to Supabase Storage, 
 
 ## Host mode
 
-Visit `/host` and enter `HOST_PASSWORD`. Host mode adjusts displayed site and video numbers. Negative offsets are allowed but public numbers are clamped at zero.
+Visit `/host` and enter `HOST_PASSWORD`. Host mode shows subscriber growth, exports subscriber CSV, and adjusts displayed site and video numbers. Negative offsets are allowed but public numbers are clamped at zero.
 
 ## Deploy
 
-Import the repository into Vercel, add the environment variables, and deploy. Apply the Supabase migration before enabling accounts or uploads.
+Import the repository into Vercel, add the environment variables, and deploy. Apply the Supabase migration before enabling uploads. Subscriber identity is handled by the private `subscribers` table and `kv_sub` cookie rather than Supabase Auth.

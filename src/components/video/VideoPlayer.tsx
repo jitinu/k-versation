@@ -1,18 +1,29 @@
 "use client";
-import { useRef, useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
 import type { Video } from "@/lib/supabase/types";
+
 export function VideoPlayer({ video }: { video: Video }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const viewRecorded = useRef(false);
+  const playRecorded = useRef(false);
   const [started, setStarted] = useState(false);
-  function play() {
-    void ref.current?.play();
-    setStarted(true);
+
+  useEffect(() => {
+    if (viewRecorded.current) return;
+    viewRecorded.current = true;
     void fetch("/api/views", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ videoId: video.id }),
     });
+  }, [video.id]);
+
+  function play() {
+    void ref.current?.play();
+    setStarted(true);
   }
+
   return (
     <div className="bg-surface relative aspect-video overflow-hidden rounded-[var(--radius-media)]">
       <video
@@ -22,14 +33,14 @@ export function VideoPlayer({ video }: { video: Video }) {
         poster={video.thumbnail_url}
         src={video.video_url}
         onPlay={() => {
-          if (!started) {
-            setStarted(true);
-            void fetch("/api/views", {
-              method: "POST",
-              headers: { "content-type": "application/json" },
-              body: JSON.stringify({ videoId: video.id }),
-            });
-          }
+          setStarted(true);
+          if (playRecorded.current) return;
+          playRecorded.current = true;
+          void fetch("/api/views", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ videoId: video.id }),
+          });
         }}
       />
       {!started && (

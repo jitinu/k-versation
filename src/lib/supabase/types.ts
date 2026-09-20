@@ -1,13 +1,14 @@
-export type VideoSection = "conversation" | "monologue";
+export type VideoSection = "conversation" | "monologue" | "intro";
 export type ReactionKind = "thumbs_up" | "heart" | "laugh" | "wow" | "fire";
 
-export type Profile = {
+export type Subscriber = {
   id: string;
-  username: string;
-  display_name: string;
+  email: string;
+  name: string;
   country_code: string;
   country_name: string;
   phone: string | null;
+  token: string;
   created_at: string;
 };
 
@@ -32,15 +33,14 @@ export type Video = {
 export type Comment = {
   id: string;
   video_id: string;
-  user_id: string;
   body: string;
   created_at: string;
-  profiles?: Pick<Profile, "username" | "display_name"> | null;
+  author_name: string;
 };
 
 export type Reaction = {
   video_id: string;
-  user_id: string;
+  subscriber_id: string;
   kind: ReactionKind;
   created_at: string;
 };
@@ -68,10 +68,11 @@ export type CountryMembers = {
 export type Database = {
   public: {
     Tables: {
-      profiles: {
-        Row: Profile;
-        Insert: Omit<Profile, "created_at">;
-        Update: Partial<Profile>;
+      subscribers: {
+        Row: Subscriber;
+        Insert: Omit<Subscriber, "id" | "created_at" | "token"> &
+          Partial<Pick<Subscriber, "id" | "created_at" | "token">>;
+        Update: Partial<Subscriber>;
         Relationships: [];
       };
       videos: { Row: Video; Insert: Partial<Video>; Update: Partial<Video>; Relationships: [] };
@@ -82,15 +83,9 @@ export type Database = {
         Relationships: [];
       };
       comments: {
-        Row: Comment;
-        Insert: Omit<Comment, "id" | "created_at">;
-        Update: Partial<Comment>;
-        Relationships: [];
-      };
-      subscriptions: {
-        Row: { user_id: string; created_at: string };
-        Insert: { user_id: string };
-        Update: never;
+        Row: Omit<Comment, "author_name"> & { subscriber_id: string };
+        Insert: { video_id: string; subscriber_id: string; body: string };
+        Update: Partial<{ video_id: string; subscriber_id: string; body: string }>;
         Relationships: [];
       };
       site_stats: {
@@ -106,12 +101,13 @@ export type Database = {
         Relationships: [];
       };
     };
-    Views: { video_display_stats: { Row: VideoStats; Relationships: [] } };
+    Views: {
+      comments_public: { Row: Comment; Relationships: [] };
+      video_display_stats: { Row: VideoStats; Relationships: [] };
+    };
     Functions: {
       record_impression: { Args: Record<string, never>; Returns: undefined };
       record_view: { Args: { p_video_id: string }; Returns: undefined };
-      username_available: { Args: { p_username: string }; Returns: boolean };
-      email_for_username: { Args: { p_username: string }; Returns: string | null };
       site_numbers: { Args: Record<string, never>; Returns: SiteNumbers[] };
       members_by_country: { Args: Record<string, never>; Returns: CountryMembers[] };
     };

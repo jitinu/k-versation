@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { createClient, hasSupabaseEnv } from "@/lib/supabase/client";
+import { useState } from "react";
+import { useSubscribe } from "@/components/subscribe/SubscribeProvider";
 
 const links = [
   ["/conversations", "Conversations"],
@@ -16,36 +15,10 @@ const links = [
 export function CornerNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
-  const [username, setUsername] = useState<string | null>(null);
-  useEffect(() => {
-    if (!hasSupabaseEnv()) return;
-    const client = createClient();
-    const loadProfile = async (nextUser: { id: string; email?: string } | null) => {
-      setUser(nextUser);
-      if (!nextUser) {
-        setUsername(null);
-        return;
-      }
-      const { data } = await client
-        .from("profiles")
-        .select("username")
-        .eq("id", nextUser.id)
-        .maybeSingle();
-      setUsername(data?.username ?? null);
-    };
-    void client.auth.getUser().then(({ data }) => loadProfile(data.user));
-    const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
-      void loadProfile(session?.user ?? null);
-    });
-    return () => listener.subscription.unsubscribe();
-  }, []);
-  const signOut = async () => {
-    await createClient().auth.signOut();
-    setUser(null);
-    setUsername(null);
-    router.refresh();
+  const { subscriber, open: openSubscribe } = useSubscribe();
+  const subscribe = () => {
+    setOpen(false);
+    openSubscribe();
   };
   return (
     <header className="fixed top-5 left-1/2 z-50 w-[calc(100%-24px)] -translate-x-1/2">
@@ -75,24 +48,18 @@ export function CornerNav() {
           ))}
         </nav>
         <div className="hidden items-center md:flex">
-          {user ? (
-            <div className="flex items-center gap-2">
-              <span className="px-2 text-sm">{username ?? user.email}</span>
-              <button
-                type="button"
-                onClick={signOut}
-                className="btn btn-primary px-4 py-1.5 text-sm"
-              >
-                Sign out
-              </button>
-            </div>
+          {subscriber ? (
+            <span className="border-line rounded-full border px-4 py-1.5 text-sm opacity-65">
+              Subscribed ✓
+            </span>
           ) : (
-            <Link
-              href={`/login?next=${encodeURIComponent(pathname)}`}
+            <button
+              type="button"
+              onClick={subscribe}
               className="btn btn-primary px-4 py-1.5 text-sm"
             >
-              Sign in <span className="arrow">↗</span>
-            </Link>
+              Subscribe <span className="arrow">↗</span>
+            </button>
           )}
         </div>
       </div>
@@ -117,18 +84,12 @@ export function CornerNav() {
                 {label}
               </Link>
             ))}
-            {user ? (
-              <button type="button" onClick={signOut} className="mt-4 text-left text-sm">
-                Sign out · {username ?? user.email}
-              </button>
+            {subscriber ? (
+              <span className="mt-4 text-sm opacity-65">Subscribed ✓</span>
             ) : (
-              <Link
-                href={`/login?next=${encodeURIComponent(pathname)}`}
-                onClick={() => setOpen(false)}
-                className="mt-4 text-sm"
-              >
-                Sign in
-              </Link>
+              <button type="button" onClick={subscribe} className="mt-4 text-left text-sm">
+                Subscribe ↗
+              </button>
             )}
           </nav>
         </div>

@@ -8,10 +8,11 @@ import { CookieBanner } from "./CookieBanner";
 import { ImpressionTracker } from "./ImpressionTracker";
 import { ThemeScroller } from "@/components/motion/ThemeScroller";
 import { PageTransition } from "@/components/motion/PageTransition";
+import { SubscribeProvider } from "@/components/subscribe/SubscribeProvider";
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <SubscribeProvider>
       <SmoothScroll />
       <Cursor />
       <CornerNav />
@@ -29,6 +30,6 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
           src="https://plausible.io/js/script.js"
         />
       ) : null}
-    </>
+    </SubscribeProvider>
   );
 }

@@ -1,111 +1,25 @@
-insert into auth.users (
-  instance_id,
-  id,
-  aud,
-  role,
-  email,
-  encrypted_password,
-  email_confirmed_at,
-  created_at,
-  updated_at,
-  raw_app_meta_data,
-  raw_user_meta_data,
-  is_super_admin,
-  is_sso_user,
-  is_anonymous
-)
+insert into public.subscribers (id, email, name, country_code, country_name, phone)
 values
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000001',
-    'authenticated',
-    'authenticated',
-    'kr-member@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"Korean Member","username":"kr_member"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000002',
-    'authenticated',
-    'authenticated',
-    'us-member@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"US Member","username":"us_member"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000003',
-    'authenticated',
-    'authenticated',
-    'jp-member@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"Japan Member","username":"jp_member"}',
-    false,
-    false,
-    false
-  )
-on conflict (id) do nothing;
-
-insert into public.profiles (id, username, display_name, country_code, country_name)
-values
-  (
-    '00000000-0000-0000-0000-000000000001',
-    'kr_member',
-    'Korean Member',
-    'KR',
-    'South Korea'
-  ),
-  (
-    '00000000-0000-0000-0000-000000000002',
-    'us_member',
-    'US Member',
-    'US',
-    'United States'
-  ),
-  (
-    '00000000-0000-0000-0000-000000000003',
-    'jp_member',
-    'Japan Member',
-    'JP',
-    'Japan'
-  )
-on conflict (id) do update
-set
-  username = excluded.username,
-  display_name = excluded.display_name,
+  ('20000000-0000-0000-0000-000000000001', 'mina.park@example.com', 'Mina Park', 'KR', 'South Korea', null),
+  ('20000000-0000-0000-0000-000000000002', 'jiho.kim@example.com', 'Jiho Kim', 'KR', 'South Korea', null),
+  ('20000000-0000-0000-0000-000000000003', 'sora.lee@example.com', 'Sora Lee', 'KR', 'South Korea', null),
+  ('20000000-0000-0000-0000-000000000004', 'olivia.chen@example.com', 'Olivia Chen', 'US', 'United States', null),
+  ('20000000-0000-0000-0000-000000000005', 'james.chen@example.com', 'James Chen', 'US', 'United States', null),
+  ('20000000-0000-0000-0000-000000000006', 'yuki.sato@example.com', 'Yuki Sato', 'JP', 'Japan', null),
+  ('20000000-0000-0000-0000-000000000007', 'li.wei@example.com', 'Li Wei', 'CN', 'China', null),
+  ('20000000-0000-0000-0000-000000000008', 'mei.lin@example.com', 'Mei Lin', 'TW', 'Taiwan', null),
+  ('20000000-0000-0000-0000-000000000009', 'noor.khan@example.com', 'Noor Khan', 'AE', 'United Arab Emirates', null),
+  ('20000000-0000-0000-0000-000000000010', 'george.wright@example.com', 'George Wright', 'GB', 'United Kingdom', null)
+on conflict (id) do update set
+  email = excluded.email,
+  name = excluded.name,
   country_code = excluded.country_code,
-  country_name = excluded.country_name;
+  country_name = excluded.country_name,
+  phone = excluded.phone;
 
 insert into public.videos (
-  id,
-  slug,
-  section,
-  title,
-  subtitle,
-  description,
-  video_url,
-  thumbnail_url,
-  duration_seconds,
-  published_at
+  id, slug, section, title, subtitle, description, video_url, thumbnail_url,
+  duration_seconds, published_at
 )
 values
   (
@@ -195,7 +109,7 @@ values
   (
     '10000000-0000-0000-0000-000000000008',
     'why-i-started-k-versation',
-    'monologue',
+    'intro',
     'Why I started K-VERSATION',
     'A note on curiosity, culture, and making room for one more story',
     'Daniel shares the personal question behind K-VERSATION and why the best way to understand a culture is often to listen first.',
@@ -228,8 +142,7 @@ values
     1740,
     '2026-04-26T00:00:00Z'
   )
-on conflict (id) do update
-set
+on conflict (id) do update set
   slug = excluded.slug,
   section = excluded.section,
   title = excluded.title,
@@ -240,155 +153,17 @@ set
   duration_seconds = excluded.duration_seconds,
   published_at = excluded.published_at;
 
-insert into auth.users (
-  instance_id,
-  id,
-  aud,
-  role,
-  email,
-  encrypted_password,
-  email_confirmed_at,
-  created_at,
-  updated_at,
-  raw_app_meta_data,
-  raw_user_meta_data,
-  is_super_admin,
-  is_sso_user,
-  is_anonymous
-)
+insert into public.reactions (video_id, subscriber_id, kind)
 values
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000004',
-    'authenticated',
-    'authenticated',
-    'kr-member-2@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"Korean Member Two","username":"kr_member_2"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000005',
-    'authenticated',
-    'authenticated',
-    'kr-member-3@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"Korean Member Three","username":"kr_member_3"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000006',
-    'authenticated',
-    'authenticated',
-    'us-member-2@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"US Member Two","username":"us_member_2"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000007',
-    'authenticated',
-    'authenticated',
-    'cn-member@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"China Member","username":"cn_member"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000008',
-    'authenticated',
-    'authenticated',
-    'tw-member@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"Taiwan Member","username":"tw_member"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000009',
-    'authenticated',
-    'authenticated',
-    'ae-member@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"United Arab Emirates Member","username":"ae_member"}',
-    false,
-    false,
-    false
-  ),
-  (
-    '00000000-0000-0000-0000-000000000000',
-    '00000000-0000-0000-0000-000000000010',
-    'authenticated',
-    'authenticated',
-    'gb-member@example.com',
-    '',
-    now(),
-    now(),
-    now(),
-    '{"provider":"email","providers":["email"]}',
-    '{"display_name":"United Kingdom Member","username":"gb_member"}',
-    false,
-    false,
-    false
-  )
-on conflict (id) do nothing;
+  ('10000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 'heart'),
+  ('10000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000004', 'thumbs_up')
+on conflict do nothing;
 
-insert into public.profiles (id, username, display_name, country_code, country_name)
+insert into public.comments (video_id, subscriber_id, body)
 values
-  ('00000000-0000-0000-0000-000000000004', 'kr_member_2', 'Korean Member Two', 'KR', 'South Korea'),
-  ('00000000-0000-0000-0000-000000000005', 'kr_member_3', 'Korean Member Three', 'KR', 'South Korea'),
-  ('00000000-0000-0000-0000-000000000006', 'us_member_2', 'US Member Two', 'US', 'United States'),
-  ('00000000-0000-0000-0000-000000000007', 'cn_member', 'China Member', 'CN', 'China'),
-  ('00000000-0000-0000-0000-000000000008', 'tw_member', 'Taiwan Member', 'TW', 'Taiwan'),
   (
-    '00000000-0000-0000-0000-000000000009',
-    'ae_member',
-    'United Arab Emirates Member',
-    'AE',
-    'United Arab Emirates'
-  ),
-  ('00000000-0000-0000-0000-000000000010', 'gb_member', 'United Kingdom Member', 'GB', 'United Kingdom')
-on conflict (id) do update
-set
-  username = excluded.username,
-  display_name = excluded.display_name,
-  country_code = excluded.country_code,
-  country_name = excluded.country_name;
+    '10000000-0000-0000-0000-000000000001',
+    '20000000-0000-0000-0000-000000000001',
+    'This feels like the kind of conversation that keeps unfolding after the video ends.'
+  )
+on conflict do nothing;

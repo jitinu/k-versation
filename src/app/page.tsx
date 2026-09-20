@@ -7,6 +7,7 @@ import Globe from "@/components/Globe";
 import { TimeDive, type Era } from "@/components/home/TimeDive";
 import { Carousel } from "@/components/video/Carousel";
 import { VideoCard } from "@/components/video/VideoCard";
+import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeButton";
 import { getLatest, getMembersByCountry, getSiteNumbers, listVideos } from "@/lib/data";
 
 const eras: Era[] = [
@@ -60,11 +61,25 @@ const eras: Era[] = [
     alt: "Crowds celebrating the inauguration of the Korean government in downtown Seoul, 1948",
   },
   {
-    year: "Since 1395",
-    place: "Gyeongbokgung",
-    line: "And beneath it all: six hundred years of palaces, hanbok, and stories still worth telling.",
+    year: "c. 1900",
+    place: "Gwanghwamun",
+    line: "Around 1900 Seoul was still a walled city of gates, tiled roofs, and streetcar bells.",
     src: "/timeline/era-08.jpg",
-    alt: "A woman in white hanbok walking through Gyeongbokgung Palace",
+    alt: "People and carts moving along a street near Gwanghwamun in Seoul around 1900",
+  },
+  {
+    year: "1880s",
+    place: "Joseon",
+    line: "In the 1880s Joseon opened its doors, and the world met Korea for the first time.",
+    src: "/timeline/era-09.jpg",
+    alt: "Joseon people gathered outdoors in Seoul in an 1880s photograph",
+  },
+  {
+    year: "1700s",
+    place: "Joseon, in ink",
+    line: "Long before cameras, Korea told its own stories in ink. K-VERSATION just does it out loud.",
+    src: "/timeline/era-10.jpg",
+    alt: "Kim Hong-do's Joseon genre painting Ssireum, depicting a wrestling match",
   },
 ];
 
@@ -72,14 +87,16 @@ const closing =
   "I'm Daniel Koo, a Korean American from the Bay Area. K-VERSATION is how I keep that conversation going.";
 
 export default async function Home() {
-  const [conversation, monologue, conversations, monologues, numbers, members] = await Promise.all([
-    getLatest("conversation"),
-    getLatest("monologue"),
-    listVideos("conversation"),
-    listVideos("monologue"),
-    getSiteNumbers(),
-    getMembersByCountry(),
-  ]);
+  const [conversation, intro, monologue, conversations, monologues, numbers, members] =
+    await Promise.all([
+      getLatest("conversation"),
+      getLatest("intro"),
+      getLatest("monologue"),
+      listVideos("conversation"),
+      listVideos("monologue"),
+      getSiteNumbers(),
+      getMembersByCountry(),
+    ]);
 
   return (
     <>
@@ -118,6 +135,30 @@ export default async function Home() {
           </Parallax>
         </div>
       </section>
+
+      {intro ? (
+        <section data-theme="ivory" className="section-gap">
+          <div className="page">
+            <p className="eyebrow">Start here</p>
+            <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:items-center">
+              <div className="lg:col-span-7">
+                <Reveal variant="mask">
+                  <VideoCard video={intro} featured />
+                </Reveal>
+              </div>
+              <div className="lg:col-span-5">
+                <h2 className="font-display text-4xl normal-case md:text-5xl">
+                  Welcome to K-VERSATION.
+                </h2>
+                <p className="text-ink-2 mt-6 max-w-md text-lg normal-case">{intro.description}</p>
+                <Link href={`/video/${intro.slug}`} className="btn btn-primary mt-8">
+                  Watch the intro <span className="arrow">↗</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
 
       <section data-theme="ink" className="section-gap">
         <div className="page">
@@ -193,7 +234,7 @@ export default async function Home() {
             <div className="grid grid-cols-2 gap-x-6 gap-y-12">
               {[
                 ["impressions", numbers.impressions, "Total site impressions"],
-                ["views", numbers.views, "Total site views"],
+                ["views", numbers.views, "Video views"],
                 ["members", numbers.members, "Total members"],
                 ["countries", numbers.countries, "Countries reached"],
               ].map(([key, value, label], index) => (
@@ -219,9 +260,12 @@ export default async function Home() {
           <h2 className="max-w-[18ch] text-[clamp(2rem,5vw,4.5rem)] leading-[1.02] tracking-[-0.03em]">
             Start with one conversation.
           </h2>
-          <Link href="/conversations" className="btn btn-primary mt-10">
-            Start watching <span className="arrow">↗</span>
-          </Link>
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
+            <Link href="/conversations" className="btn btn-primary">
+              Start watching <span className="arrow">↗</span>
+            </Link>
+            <SubscribeEpisodeButton />
+          </div>
         </div>
       </section>
     </>

@@ -1,6 +1,6 @@
 # Timeline image credits
 
-All eight exploratory timeline images are from Wikimedia Commons and are resized derivatives of the linked source files. Attribution is retained below where the license requires it.
+All timeline images are resized derivatives of the linked Wikimedia Commons source files. Attribution is retained below where the license requires it.
 
 ## Era 01 — Seoul skyline today
 - File: `Samseong-dong skyline from Bongeunsa 2.jpg`
@@ -51,9 +51,23 @@ All eight exploratory timeline images are from Wikimedia Commons and are resized
 - Author/source credit: U.S. Army Signal Corps — National Institute of Korean History archive reference AUS005_06_03V0000_972
 - License: Public domain (U.S. Army Signal Corps work)
 
-## Era 08 — Gyeongbokgung / hanbok
-- File: `Woman wearing white, Gyeongbok Palace, Korea.jpg`
+## Era 08 — Seoul around 1900
+- File: `Entree du Palais Imperial Coreen ca 1900.jpg`
 - Local asset: `public/timeline/era-08.jpg`
-- Source: [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Woman_wearing_white,_Gyeongbok_Palace,_Korea.jpg)
-- Author/source credit: Author not listed — Pixabay source
-- License: Creative Commons CC0 1.0 Universal Public Domain Dedication
+- Source: [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Entree_du_Palais_Imperial_Coreen_ca_1900.jpg)
+- Author/source credit: Unknown author; historical postcard
+- License: Public domain
+
+## Era 09 — Joseon daily life in the 1890s
+- File: `Every-day life in Korea; (1898) (14766723094).jpg`
+- Local asset: `public/timeline/era-09.jpg`
+- Source: [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Every-day_life_in_Korea;_(1898)_(14766723094).jpg)
+- Author/source credit: Internet Archive Book Images; source book by Daniel L. Gifford
+- License: No known copyright restrictions / public domain
+
+## Era 10 — Kim Hong-do, *Ssireum*
+- File: `Danwon Ssireum.jpg`
+- Local asset: `public/timeline/era-10.jpg`
+- Source: [Wikimedia Commons file page](https://commons.wikimedia.org/wiki/File:Danwon_Ssireum.jpg)
+- Author/source credit: Kim Hong-do (Danwon); Gongu copyright archive
+- License: Public domain

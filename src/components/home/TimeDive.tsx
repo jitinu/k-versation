@@ -22,6 +22,28 @@ function clamp01(value: number) {
   return Math.min(1, Math.max(0, value));
 }
 
+export function frame(camera: number, index: number, count: number) {
+  const z = index - camera;
+  let scale: number;
+  let opacity: number;
+  let brightness: number;
+  if (z >= 0) {
+    scale = 1 / (1 + z * DEPTH);
+    opacity = clamp01(1.4 - z * 0.35);
+    brightness = clamp01(1 - z * 0.22);
+  } else {
+    const passed = -z;
+    const last = index === count - 1;
+    scale = 1 + Math.min(passed, last ? 0.5 : 2) * (last ? 0.6 : PASS);
+    opacity = last ? Math.max(0.35, 1 - passed * 0.9) : clamp01(1 - passed * 1.15);
+    brightness = last ? clamp01(1 - passed * 0.7) : 1;
+  }
+  const local = camera - index;
+  const captionOpacity = clamp01(1 - Math.abs(local - 0.15) * 1.7);
+  const captionY = (0.15 - local) * 40;
+  return { scale, opacity, brightness, captionOpacity, captionY };
+}
+
 export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -39,21 +61,11 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
       const camera = progress * (count + 1);
       layerRefs.current.forEach((layer, index) => {
         if (!layer) return;
-        const z = index - camera;
-        let scale: number;
-        let opacity: number;
-        let brightness: number;
-        if (z >= 0) {
-          scale = 1 / (1 + z * DEPTH);
-          opacity = clamp01(1.4 - z * 0.35);
-          brightness = clamp01(1 - z * 0.22);
-        } else {
-          const passed = -z;
-          const last = index === count - 1;
-          scale = 1 + Math.min(passed, last ? 0.5 : 2) * (last ? 0.6 : PASS);
-          opacity = last ? Math.max(0.35, 1 - passed * 0.9) : clamp01(1 - passed * 1.15);
-          brightness = last ? clamp01(1 - passed * 0.7) : 1;
-        }
+        const { scale, opacity, brightness, captionOpacity, captionY } = frame(
+          camera,
+          index,
+          count,
+        );
         layer.style.transform = `translate3d(0,0,0) scale(${scale.toFixed(4)})`;
         layer.style.opacity = opacity.toFixed(3);
         layer.style.filter = `brightness(${(0.35 + brightness * 0.65).toFixed(3)})`;
@@ -61,11 +73,9 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
 
         const caption = captionRefs.current[index];
         if (!caption) return;
-        const local = camera - index;
-        const visible = clamp01(1 - Math.abs(local - 0.15) * 1.7);
-        caption.style.opacity = visible.toFixed(3);
-        caption.style.transform = `translate3d(0, ${((0.15 - local) * 40).toFixed(2)}px, 0)`;
-        caption.style.visibility = visible <= 0.001 ? "hidden" : "visible";
+        caption.style.opacity = captionOpacity.toFixed(3);
+        caption.style.transform = `translate3d(0, ${captionY.toFixed(2)}px, 0)`;
+        caption.style.visibility = captionOpacity <= 0.001 ? "hidden" : "visible";
       });
       const closingNode = closingRef.current;
       if (closingNode) {
@@ -134,7 +144,16 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
               layerRefs.current[index] = node;
             }}
             className="absolute inset-0 origin-center will-change-transform"
-            style={{ zIndex: count - index }}
+            style={(() => {
+              const initial = frame(0, index, count);
+              return {
+                zIndex: count - index,
+                transform: `translate3d(0,0,0) scale(${initial.scale.toFixed(4)})`,
+                opacity: initial.opacity,
+                filter: `brightness(${(0.35 + initial.brightness * 0.65).toFixed(3)})`,
+                visibility: initial.opacity <= 0.001 ? "hidden" : "visible",
+              };
+            })()}
           >
             <Image
               src={era.src}
@@ -157,6 +176,14 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
               captionRefs.current[index] = node;
             }}
             className="page pointer-events-none absolute inset-x-0 bottom-[24vh] z-[70] will-change-transform md:bottom-[16vh]"
+            style={(() => {
+              const initial = frame(0, index, count);
+              return {
+                opacity: initial.captionOpacity,
+                transform: `translate3d(0, ${initial.captionY.toFixed(2)}px, 0)`,
+                visibility: initial.captionOpacity <= 0.001 ? "hidden" : "visible",
+              };
+            })()}
           >
             <p className="eyebrow !text-[#b5b3ab]">
               {era.year} · {era.place}
@@ -170,6 +197,7 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
         <div
           ref={closingRef}
           className="page pointer-events-none absolute inset-x-0 top-1/2 z-[70] -translate-y-1/2 text-center will-change-transform"
+          style={{ opacity: 0 }}
         >
           <p className="eyebrow !text-[#b5b3ab]">Why K-VERSATION</p>
           <p className="font-display mx-auto mt-5 max-w-[26ch] text-[clamp(1.9rem,4.6vw,4.2rem)] leading-[1.05] tracking-[-0.02em]">

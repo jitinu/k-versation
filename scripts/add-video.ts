@@ -19,7 +19,7 @@ if (
   !descriptionFile ||
   !publish ||
   !section ||
-  !["conversation", "monologue"].includes(section)
+  !["conversation", "monologue", "intro"].includes(section)
 )
   throw new Error("Required: --file --section --title --description-file --publish");
 const slug = title
@@ -59,7 +59,7 @@ async function main() {
   const thumbnailUrl = admin.storage.from("thumbnails").getPublicUrl(thumbPath).data.publicUrl;
   const { error } = await admin.from("videos").insert({
     slug,
-    section: section as "conversation" | "monologue",
+    section: section as "conversation" | "monologue" | "intro",
     title,
     subtitle,
     description: await fs.promises.readFile(descriptionFile!, "utf8"),
