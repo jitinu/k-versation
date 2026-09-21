@@ -48,7 +48,8 @@ async function main() {
   await fs.promises.mkdir(posterDir, { recursive: true });
   const failures: Array<{ title: string; file: string; error: string }> = [];
   for (const entry of manifest) {
-    const candidates = files.get(entry.file.normalize("NFC")) ?? [];
+    const filename = path.basename(entry.file).normalize("NFC");
+    const candidates = files.get(filename) ?? [];
     if (candidates.length !== 1) {
       const error = `${entry.file}: expected one matching source, found ${candidates.length}`;
       failures.push({ title: entry.title, file: entry.file, error });
