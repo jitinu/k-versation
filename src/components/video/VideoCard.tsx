@@ -49,8 +49,8 @@ export function VideoCard({
                 featured
                   ? "text-3xl md:text-5xl"
                   : variant === "portrait"
-                    ? "text-2xl md:text-[28px]"
-                    : "text-2xl md:text-3xl"
+                    ? "line-clamp-3 text-2xl md:text-[26px]"
+                    : "line-clamp-3 text-xl md:text-2xl"
               }`}
             >
               {video.title}
