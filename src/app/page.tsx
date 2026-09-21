@@ -116,11 +116,11 @@ export default async function Home() {
                 going.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link
-                  href={conversation ? `/video/${conversation.slug}` : "/conversations"}
-                  className="btn btn-primary"
-                >
-                  Watch the latest <span className="arrow">↗</span>
+                <Link href="/conversations" className="btn btn-primary">
+                  Watch Conversations <span className="arrow">↗</span>
+                </Link>
+                <Link href="/monologues" className="btn btn-primary">
+                  Watch Monologues <span className="arrow">↗</span>
                 </Link>
                 <Link href="/about" className="btn btn-ghost">
                   About Daniel <span className="arrow">↗</span>

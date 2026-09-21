@@ -225,7 +225,7 @@ export function TimeDive({ eras, closing }: { eras: Era[]; closing: string }) {
           <button
             type="button"
             onClick={skip}
-            className="link-draw cursor-pointer text-[#e8e8e3]/80 hover:text-[#e8e8e3]"
+            className="link-draw cursor-pointer px-1 py-2 text-sm text-[#e8e8e3]/80 hover:text-[#e8e8e3] md:text-base"
           >
             Skip intro
           </button>
