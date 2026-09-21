@@ -117,6 +117,18 @@ values
     'http://127.0.0.1:54321/storage/v1/object/public/thumbnails/thumbnails/diane-rosenberg-on-forty-years-of-teaching-phones-and-what-kids-actually-need.jpg',
     2528,
     '2025-09-20T00:00:00Z'
+  ),
+  (
+    '10000000-0000-0000-0000-000000000009',
+    'seungheon-choi-quit-coaching-basketball-after-seven-years-here-s-why-korea-made-it-hard',
+    'conversation',
+    'Seungheon Choi quit coaching basketball after seven years. Here''s why Korea made it hard',
+    'Philosophy graduate, former basketball coach, now training in social welfare in Seoul',
+    'Seungheon Choi studied philosophy in Seoul, then turned down the safe office job everyone expected and spent seven years coaching basketball to kids, because he knew he would regret it forever if he didn''t. He explains what coaching taught him about being part of a child''s childhood, and how running on autopilot inside an academy''s fixed methods eventually pushed him toward volunteering and a new path in social welfare. Seungheon is direct about a Korean system that treats any life outside graduate, stable job, marriage as dangerous, and about kids in Gangnam who feel their world collapse when they disappoint their parents. He connects it back to the court: force every player into one perfect shooting form and you would have fixed Steph Curry''s release instead of building on it. He also shares how he uses AI to brainstorm drills without letting it replace his own judgment.',
+    'http://127.0.0.1:54321/storage/v1/object/public/videos/videos/seungheon-choi-quit-coaching-basketball-after-seven-years-here-s-why-korea-made-it-hard.mp4',
+    'http://127.0.0.1:54321/storage/v1/object/public/thumbnails/thumbnails/seungheon-choi-quit-coaching-basketball-after-seven-years-here-s-why-korea-made-it-hard.jpg',
+    654,
+    '2025-10-04T00:00:00Z'
   )
 on conflict (id) do update set
   slug = excluded.slug,
