@@ -59,7 +59,7 @@ export function SubscribeModal({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-[#080807]/80 px-4 py-8 md:items-center"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-[#080807]/80 px-4 py-6"
       role="presentation"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -70,8 +70,7 @@ export function SubscribeModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="subscribe-title"
-        data-lenis-prevent
-        className="bg-canvas text-ink max-h-[calc(100dvh-2rem)] w-full max-w-lg overflow-y-auto rounded-[var(--radius-media)] p-6 md:p-10"
+        className="bg-canvas text-ink w-full max-w-xl rounded-[var(--radius-media)] p-5 md:p-8"
       >
         {success ? (
           <div className="flex min-h-80 flex-col items-center justify-center text-center">
@@ -80,10 +79,13 @@ export function SubscribeModal({
           </div>
         ) : (
           <>
-            <div className="mb-6 flex items-start justify-between gap-5">
+            <div className="mb-5 flex items-start justify-between gap-5">
               <div>
                 <p className="eyebrow">Join the list</p>
-                <h2 id="subscribe-title" className="font-display mt-4 text-3xl normal-case md:text-4xl">
+                <h2
+                  id="subscribe-title"
+                  className="font-display mt-3 text-2xl normal-case md:text-3xl"
+                >
                   Get every new conversation.
                 </h2>
               </div>

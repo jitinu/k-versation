@@ -36,7 +36,7 @@ export function SubscribeForm({ onSuccess }: { onSuccess: (name: string) => void
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="grid gap-3 md:grid-cols-2">
       <label className="block text-sm">
         Name
         <input name="name" autoComplete="name" required className="mt-2" />
@@ -85,8 +85,8 @@ export function SubscribeForm({ onSuccess }: { onSuccess: (name: string) => void
         aria-hidden="true"
         className="absolute -left-[9999px] h-px w-px opacity-0"
       />
-      {error ? <p className="text-signal text-sm normal-case">{error}</p> : null}
-      <button className="btn btn-primary w-full" disabled={pending}>
+      {error ? <p className="text-signal text-sm normal-case md:col-span-2">{error}</p> : null}
+      <button className="btn btn-primary mt-1 w-full md:col-span-2" disabled={pending}>
         {pending ? "Joining…" : "Subscribe ↗"}
       </button>
     </form>
