@@ -242,9 +242,9 @@ export default async function Home() {
                   key={String(key)}
                   delay={index * 80}
                   variant="fade"
-                  className="border-line border-t pt-4"
+                  className="border-line @container min-w-0 border-t pt-4"
                 >
-                  <p className="text-5xl tabular-nums md:text-6xl">
+                  <p className="text-[min(var(--text-6xl),19cqi)] whitespace-nowrap tabular-nums">
                     <CountUp value={Number(value)} />
                   </p>
                   <p className="eyebrow mt-3">{label}</p>

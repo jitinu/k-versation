@@ -187,8 +187,8 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           pointsMerge={false}
           pointLat="lat"
           pointLng="lng"
-          pointAltitude={(point) => 0.02 + Math.sqrt((point as Point).members) * 0.012}
-          pointRadius={(point) => 0.18 + Math.sqrt((point as Point).members) * 0.08}
+          pointAltitude={0.004}
+          pointRadius={(point) => 0.35 + Math.sqrt((point as Point).members) * 0.05}
           pointColor={() => WHITE}
           ringsData={points}
           ringLat="lat"
@@ -213,7 +213,7 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           labelDotRadius={0}
           labelColor={() => "rgba(255,255,255,0.85)"}
           labelResolution={2}
-          labelAltitude={0.045}
+          labelAltitude={0.012}
           pointLabel={(point) => {
             const row = point as Point;
             return `${row.country_name}: ${row.members}`;
