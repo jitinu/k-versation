@@ -224,7 +224,7 @@ export async function publishVideo(input: PublishVideoInput) {
           thumbnail_url: thumbnailUrl,
           duration_seconds: Math.round(durationOf(file)),
           published_at: `${input.publish}T00:00:00.000Z`,
-          view_offset: 900 + Math.floor(Math.random() * 1701),
+          view_offset: 350 + Math.floor(Math.random() * 501),
         },
         { onConflict: "slug" },
       )
