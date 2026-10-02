@@ -211,22 +211,55 @@ export async function publishVideo(input: PublishVideoInput) {
       uploadMedia(`videos/videos/${slug}.mp4`, videoOutput, "video/mp4"),
       uploadMedia(`thumbnails/thumbnails/${slug}.jpg`, thumbnail, "image/jpeg"),
     ]);
-    const { error } = await admin.from("videos").upsert(
-      {
-        slug,
-        section: input.section,
-        title: input.title,
-        subtitle: input.subtitle ?? null,
-        description: input.description,
-        video_url: videoUrl,
-        thumbnail_url: thumbnailUrl,
-        duration_seconds: Math.round(durationOf(file)),
-        published_at: `${input.publish}T00:00:00.000Z`,
-        view_offset: 100 + Math.floor(Math.random() * 101),
-      },
-      { onConflict: "slug" },
-    );
+    const { data: video, error } = await admin
+      .from("videos")
+      .upsert(
+        {
+          slug,
+          section: input.section,
+          title: input.title,
+          subtitle: input.subtitle ?? null,
+          description: input.description,
+          video_url: videoUrl,
+          thumbnail_url: thumbnailUrl,
+          duration_seconds: Math.round(durationOf(file)),
+          published_at: `${input.publish}T00:00:00.000Z`,
+          view_offset: 900 + Math.floor(Math.random() * 1701),
+        },
+        { onConflict: "slug" },
+      )
+      .select("id")
+      .single();
     if (error) throw error;
+
+    const { data: existingOffsets, error: offsetsError } = await admin
+      .from("reaction_offsets")
+      .select("kind")
+      .eq("video_id", video.id);
+    if (offsetsError) throw offsetsError;
+
+    const existingKinds = new Set(existingOffsets.map(({ kind }) => kind));
+    const reactionRanges = [
+      { kind: "thumbs_up", min: 25, max: 90 },
+      { kind: "heart", min: 20, max: 75 },
+      { kind: "fire", min: 12, max: 50 },
+      { kind: "laugh", min: 4, max: 28 },
+      { kind: "wow", min: 6, max: 32 },
+    ] as const;
+    const missingOffsets = reactionRanges
+      .filter(({ kind }) => !existingKinds.has(kind))
+      .map(({ kind, min, max }) => ({
+        video_id: video.id,
+        kind,
+        offset_count: min + Math.floor(Math.random() * (max - min + 1)),
+      }));
+    if (missingOffsets.length) {
+      const { error: insertOffsetsError } = await admin
+        .from("reaction_offsets")
+        .insert(missingOffsets);
+      if (insertOffsetsError) throw insertOffsetsError;
+    }
+
     return { slug, videoUrl, thumbnailUrl };
   } finally {
     await fs.promises.rm(videoOutput, { force: true });
