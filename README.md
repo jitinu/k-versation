@@ -38,7 +38,11 @@ npx tsx scripts/add-video.ts \
   --publish 2026-01-15
 ```
 
-The script uses `ffprobe`, uploads the video and thumbnail to Supabase Storage, and creates the video record. Add `--thumbnail ./thumbnail.jpg` to provide a specific thumbnail. Without it, it extracts a frame at three seconds with `ffmpeg`. You can also upload media yourself and insert a row into `videos` in the SQL editor.
+The script uses `ffprobe`, uploads the video and thumbnail to the configured media storage, and creates the video record. It uses Cloudflare R2 when all R2 settings are set and otherwise falls back to Supabase Storage. Add `--thumbnail ./thumbnail.jpg` to provide a specific thumbnail. Without it, it extracts a frame at three seconds with `ffmpeg`. You can also upload media yourself and insert a row into `videos` in the SQL editor.
+
+## Media storage (Cloudflare R2)
+
+Set `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, and `R2_PUBLIC_URL` to upload media to Cloudflare R2. `scripts/add-video.ts` and `scripts/publish-manifest.ts` use multipart streaming uploads to R2 when all five variables are set; otherwise, they upload to Supabase Storage for local development.
 
 ### Publishing many videos at once
 

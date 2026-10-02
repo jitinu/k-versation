@@ -3,6 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { createAdminClient } from "../supabase-admin";
+import { uploadMedia } from "./media-storage";
 
 export type PublishSection = "conversation" | "monologue" | "intro";
 
@@ -206,23 +207,10 @@ export async function publishVideo(input: PublishVideoInput) {
     transcode(file, videoOutput);
 
     const admin = createAdminClient();
-    const videoPath = `videos/${slug}.mp4`;
-    const thumbPath = `thumbnails/${slug}.jpg`;
-    const [videoBuffer, thumbBuffer] = await Promise.all([
-      fs.promises.readFile(videoOutput),
-      fs.promises.readFile(thumbnail),
+    const [videoUrl, thumbnailUrl] = await Promise.all([
+      uploadMedia(`videos/videos/${slug}.mp4`, videoOutput, "video/mp4"),
+      uploadMedia(`thumbnails/thumbnails/${slug}.jpg`, thumbnail, "image/jpeg"),
     ]);
-    const videoUpload = await admin.storage
-      .from("videos")
-      .upload(videoPath, videoBuffer, { upsert: true, contentType: "video/mp4" });
-    const thumbUpload = await admin.storage
-      .from("thumbnails")
-      .upload(thumbPath, thumbBuffer, { upsert: true, contentType: "image/jpeg" });
-    if (videoUpload.error || thumbUpload.error) {
-      throw videoUpload.error ?? thumbUpload.error;
-    }
-    const videoUrl = admin.storage.from("videos").getPublicUrl(videoPath).data.publicUrl;
-    const thumbnailUrl = admin.storage.from("thumbnails").getPublicUrl(thumbPath).data.publicUrl;
     const { error } = await admin.from("videos").upsert(
       {
         slug,
