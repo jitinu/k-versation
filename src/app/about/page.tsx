@@ -6,7 +6,7 @@ export default function About() {
       <div className="grid gap-12 md:grid-cols-2 md:items-center">
         <div className="grain relative aspect-[4/5]">
           <Image
-            src="/images/daniel-koo.jpg"
+            src="/images/daniel-koo-portrait.jpg"
             priority
             alt="Daniel Koo, founder of K-VERSATION"
             fill
