@@ -8,6 +8,24 @@ import { duration } from "@/components/video/VideoCard";
 import { getVideoBySlugOrId, getVideoStats } from "@/lib/data";
 import { siteConfig } from "@/lib/site";
 
+function linkify(text: string) {
+  return text.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+    /^https?:\/\//.test(part) ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-semibold break-all underline underline-offset-4"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    ),
+  );
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -44,7 +62,7 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
             <h1 className="font-display mt-6 text-3xl normal-case md:text-5xl">{video.title}</h1>
             {video.subtitle && <p className="text-ink-2 mt-4 text-lg">{video.subtitle}</p>}
             <p className="text-ink-2 mt-10 max-w-3xl text-lg whitespace-pre-line normal-case">
-              {video.description}
+              {linkify(video.description)}
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Reactions videoId={video.id} stats={stats} />
