@@ -44,6 +44,7 @@ export async function POST(request: Request) {
     .single();
   if (error || !data)
     return NextResponse.json({ error: "Unable to subscribe right now." }, { status: 500 });
+  await admin.rpc("record_impression");
   await setSubscriberCookie(data.token);
   return NextResponse.json({ ok: true, name: data.name });
 }
