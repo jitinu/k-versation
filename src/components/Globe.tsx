@@ -28,6 +28,18 @@ const aliases: Record<string, string[]> = {
   Taiwan: ["Taiwan"],
   China: ["China"],
   Japan: ["Japan"],
+  "Bosnia and Herzegovina": ["Bosnia and Herz."],
+  "Central African Republic": ["Central African Rep."],
+  "Congo, Democratic Republic": ["Dem. Rep. Congo"],
+  "Dominican Republic": ["Dominican Rep."],
+  "Equatorial Guinea": ["Eq. Guinea"],
+  "Falkland Islands": ["Falkland Is."],
+  "French Southern Territories": ["Fr. S. Antarctic Lands"],
+  "North Macedonia": ["Macedonia"],
+  "Solomon Islands": ["Solomon Is."],
+  "South Sudan": ["S. Sudan"],
+  Türkiye: ["Turkey"],
+  "Western Sahara": ["W. Sahara"],
 };
 
 function matchesCountry(name: string, country: string) {
