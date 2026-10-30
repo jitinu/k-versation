@@ -29,7 +29,7 @@ export default async function Conversations() {
             </div>
             <div className="mt-24 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {videos.map((video, index) => (
-                <Reveal key={video.id} delay={index * 60}>
+                <Reveal key={video.id} delay={(index % 3) * 60}>
                   <VideoCard video={video} />
                 </Reveal>
               ))}
