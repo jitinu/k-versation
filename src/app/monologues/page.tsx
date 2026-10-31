@@ -25,7 +25,7 @@ export default async function Monologues() {
         {videos.length ? (
           <>
             <div className="mt-24">
-              <Carousel title="Popular now" videos={popular} autoplay />
+              <Carousel title="Most popular monologues" videos={popular} autoplay />
             </div>
             <div className="mt-24 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {videos.map((video, index) => (

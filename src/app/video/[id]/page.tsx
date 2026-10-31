@@ -56,8 +56,8 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
         <div className="page">
           <div className="mx-auto max-w-4xl">
             <p className="eyebrow">
-              {video.section} · {new Date(video.published_at).toLocaleDateString()} ·{" "}
-              {duration(video.duration_seconds)} · {stats.views.toLocaleString()} views
+              {video.section} · {duration(video.duration_seconds)} · {stats.views.toLocaleString()}{" "}
+              views
             </p>
             <h1 className="font-display mt-6 text-3xl normal-case md:text-5xl">{video.title}</h1>
             {video.subtitle && <p className="text-ink-2 mt-4 text-lg">{video.subtitle}</p>}

@@ -12,7 +12,7 @@ export const metadata = {
 export default async function Conversations() {
   const [videos, popular] = await Promise.all([
     listVideos("conversation"),
-    listPopular("conversation", 6),
+    listPopular("conversation", 4),
   ]);
   return (
     <div data-theme="ivory">
@@ -25,7 +25,7 @@ export default async function Conversations() {
         {videos.length ? (
           <>
             <div className="mt-24">
-              <Carousel title="Popular now" videos={popular} autoplay />
+              <Carousel title="Most popular conversations" videos={popular} autoplay />
             </div>
             <div className="mt-24 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {videos.map((video, index) => (

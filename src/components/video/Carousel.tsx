@@ -57,6 +57,12 @@ export function Carousel({
     });
   }
 
+  const loopVideos =
+    autoplay && videos.length
+      ? Array.from({ length: Math.ceil(12 / videos.length) }, () => videos).flat()
+      : videos;
+  const renderedVideos = autoplay ? [...loopVideos, ...loopVideos] : loopVideos;
+
   return (
     <section>
       <div className="mb-6 flex items-center justify-between gap-4">
@@ -157,14 +163,20 @@ export function Carousel({
           drag.current.moved = false;
         }}
       >
-        {(autoplay ? [...videos, ...videos] : videos).map((video, index) => (
-          <div
-            className="min-w-[72vw] snap-start sm:min-w-[320px] lg:min-w-[300px] xl:min-w-[340px]"
-            key={`${video.id}-${index}`}
-          >
-            <VideoCard video={video} variant="portrait" />
-          </div>
-        ))}
+        {renderedVideos.map((video, index) => {
+          const isDuplicate = autoplay && index >= videos.length;
+          return (
+            <div
+              aria-hidden={isDuplicate || undefined}
+              className="min-w-[72vw] snap-start sm:min-w-[320px] lg:min-w-[300px] xl:min-w-[340px]"
+              inert={isDuplicate || undefined}
+              key={`${video.id}-${index}`}
+              tabIndex={isDuplicate ? -1 : undefined}
+            >
+              <VideoCard video={video} variant="portrait" />
+            </div>
+          );
+        })}
       </div>
       {!autoplay && (
         <div className="bg-line relative mt-6 h-px">

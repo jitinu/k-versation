@@ -8,7 +8,7 @@ import { TimeDive, type Era } from "@/components/home/TimeDive";
 import { Carousel } from "@/components/video/Carousel";
 import { VideoCard } from "@/components/video/VideoCard";
 import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeButton";
-import { getLatest, getMembersByCountry, getSiteNumbers, listVideos } from "@/lib/data";
+import { getLatest, getMembersByCountry, getSiteNumbers, listPopular } from "@/lib/data";
 
 const eras: Era[] = [
   {
@@ -87,16 +87,15 @@ const closing =
   "I'm Daniel Koo, a Korean American from the Bay Area. K-VERSATION is how I keep that conversation going.";
 
 export default async function Home() {
-  const [conversation, intro, monologue, conversations, monologues, numbers, members] =
-    await Promise.all([
-      getLatest("conversation"),
-      getLatest("intro"),
-      getLatest("monologue"),
-      listVideos("conversation"),
-      listVideos("monologue"),
-      getSiteNumbers(),
-      getMembersByCountry(),
-    ]);
+  const [intro, conversations, monologues, numbers, members] = await Promise.all([
+    getLatest("intro"),
+    listPopular("conversation", 4),
+    listPopular("monologue", 6),
+    getSiteNumbers(),
+    getMembersByCountry(),
+  ]);
+  const conversation = conversations[0] ?? null;
+  const monologue = monologues[0] ?? null;
 
   return (
     <>
@@ -163,10 +162,10 @@ export default async function Home() {
       <section data-theme="ink" className="section-gap">
         <div className="page">
           <div className="mb-8 flex items-end justify-between gap-6">
-            <p className="eyebrow">Latest conversation</p>
+            <p className="eyebrow">Most popular conversation</p>
             {conversation && (
               <Link href={`/video/${conversation.slug}`} className="link-draw text-sm">
-                Go watch the latest Conversation!
+                Watch the most popular conversation
               </Link>
             )}
           </div>
@@ -175,7 +174,7 @@ export default async function Home() {
               <VideoCard video={conversation} featured />
             </Reveal>
           ) : (
-            <Empty title="Latest conversation" />
+            <Empty title="Most popular conversation" />
           )}
         </div>
       </section>
@@ -183,7 +182,12 @@ export default async function Home() {
       {conversations.length ? (
         <section data-theme="ink" className="section-gap pt-0">
           <div className="page">
-            <Carousel title="Conversations" videos={conversations} href="/conversations" />
+            <Carousel
+              title="Most popular conversations"
+              videos={conversations}
+              href="/conversations"
+              autoplay
+            />
           </div>
         </section>
       ) : null}
@@ -194,7 +198,7 @@ export default async function Home() {
             <>
               <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
                 <div className="lg:col-span-5">
-                  <p className="eyebrow">Latest monologue</p>
+                  <p className="eyebrow">Most popular monologue</p>
                   <h2 className="font-display mt-6 text-3xl normal-case md:text-5xl">
                     {monologue.title}
                   </h2>
@@ -202,7 +206,7 @@ export default async function Home() {
                     <p className="text-ink-2 mt-6 max-w-md">{monologue.subtitle}</p>
                   )}
                   <Link href={`/video/${monologue.slug}`} className="btn btn-primary mt-8">
-                    Go watch the latest Monologue! <span className="arrow">↗</span>
+                    Watch the most popular monologue <span className="arrow">↗</span>
                   </Link>
                 </div>
                 <div className="lg:col-span-7">
@@ -213,12 +217,17 @@ export default async function Home() {
               </div>
               {monologues.length ? (
                 <div className="mt-28">
-                  <Carousel title="Monologues" videos={monologues} href="/monologues" />
+                  <Carousel
+                    title="Most popular monologues"
+                    videos={monologues}
+                    href="/monologues"
+                    autoplay
+                  />
                 </div>
               ) : null}
             </>
           ) : (
-            <Empty title="Latest monologue" />
+            <Empty title="Most popular monologue" />
           )}
         </div>
       </section>
@@ -279,7 +288,7 @@ function Empty({ title }: { title: string }) {
   return (
     <div className="border-line border-y py-12">
       <p className="eyebrow">{title}</p>
-      <p className="font-display mt-4 text-4xl normal-case">First conversation coming soon.</p>
+      <p className="font-display mt-4 text-4xl normal-case">More videos coming soon.</p>
     </div>
   );
 }

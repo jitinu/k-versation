@@ -23,6 +23,7 @@ export type Video = {
   thumbnail_url: string;
   duration_seconds: number;
   published_at: string;
+  sort_rank: number | null;
   view_count: number;
   view_offset: number;
   comment_offset: number;

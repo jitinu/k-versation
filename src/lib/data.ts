@@ -31,6 +31,7 @@ export async function listVideos(section?: VideoSection): Promise<Video[]> {
     .from("videos")
     .select("*")
     .lte("published_at", new Date().toISOString())
+    .order("sort_rank", { ascending: true, nullsFirst: false })
     .order("published_at", { ascending: false });
   if (section) query = query.eq("section", section);
   const { data } = await query;
