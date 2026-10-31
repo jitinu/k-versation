@@ -9,6 +9,7 @@ import { Carousel } from "@/components/video/Carousel";
 import { VideoCard } from "@/components/video/VideoCard";
 import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeButton";
 import { getLatest, getMembersByCountry, getSiteNumbers, listPopular } from "@/lib/data";
+import { SHOW_NUMBERS } from "@/lib/flags";
 
 const eras: Era[] = [
   {
@@ -91,7 +92,7 @@ export default async function Home() {
     getLatest("intro"),
     listPopular("conversation", 4),
     listPopular("monologue", 6),
-    getSiteNumbers(),
+    SHOW_NUMBERS ? getSiteNumbers() : Promise.resolve(null),
     getMembersByCountry(),
   ]);
   const conversation = conversations[0] ?? null;
@@ -234,32 +235,44 @@ export default async function Home() {
 
       <section data-theme="ink" className="section-gap">
         <div className="page">
-          <p className="eyebrow">By the numbers</p>
+          <p className="eyebrow">{SHOW_NUMBERS ? "By the numbers" : "Around the world"}</p>
           <h2 className="mt-6 max-w-[18ch] text-[clamp(2rem,5vw,4.5rem)] leading-[1.02] tracking-[-0.03em]">
-            Members in {numbers.countries} countries, one conversation at a time.
+            {SHOW_NUMBERS && numbers
+              ? `Members in ${numbers.countries} countries, one conversation at a time.`
+              : "Members around the world, one conversation at a time."}
           </h2>
-          <div className="mt-16 grid gap-12 lg:grid-cols-2">
-            <Globe members={members} />
-            <div className="grid grid-cols-2 gap-x-6 gap-y-12">
-              {[
-                ["impressions", numbers.impressions, "Total site impressions"],
-                ["views", numbers.views, "Video views"],
-                ["members", numbers.members, "Total members"],
-                ["countries", numbers.countries, "Countries reached"],
-              ].map(([key, value, label], index) => (
-                <Reveal
-                  key={String(key)}
-                  delay={index * 80}
-                  variant="fade"
-                  className="border-line @container min-w-0 border-t pt-4"
-                >
-                  <p className="text-[min(var(--text-6xl),19cqi)] whitespace-nowrap tabular-nums">
-                    <CountUp value={Number(value)} />
-                  </p>
-                  <p className="eyebrow mt-3">{label}</p>
-                </Reveal>
-              ))}
+          <div
+            className={
+              SHOW_NUMBERS
+                ? "mt-16 grid gap-12 lg:grid-cols-2"
+                : "mt-16 grid min-w-0 grid-cols-1 gap-12"
+            }
+          >
+            <div className={SHOW_NUMBERS ? "" : "mx-auto min-w-0 w-full max-w-4xl"}>
+              <Globe members={members} showCounts={SHOW_NUMBERS} />
             </div>
+            {SHOW_NUMBERS && numbers ? (
+              <div className="grid grid-cols-2 gap-x-6 gap-y-12">
+                {[
+                  ["impressions", numbers.impressions, "Total site impressions"],
+                  ["views", numbers.views, "Video views"],
+                  ["members", numbers.members, "Total members"],
+                  ["countries", numbers.countries, "Countries reached"],
+                ].map(([key, value, label], index) => (
+                  <Reveal
+                    key={String(key)}
+                    delay={index * 80}
+                    variant="fade"
+                    className="border-line @container min-w-0 border-t pt-4"
+                  >
+                    <p className="text-[min(var(--text-6xl),19cqi)] whitespace-nowrap tabular-nums">
+                      <CountUp value={Number(value)} />
+                    </p>
+                    <p className="eyebrow mt-3">{label}</p>
+                  </Reveal>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       </section>

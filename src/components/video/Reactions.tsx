@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ReactionKind, VideoStats } from "@/lib/supabase/types";
 import { createClient, hasSupabaseEnv } from "@/lib/supabase/client";
+import { SHOW_NUMBERS } from "@/lib/flags";
 
 const reactions: [ReactionKind, string][] = [
   ["thumbs_up", "👍"],
@@ -96,7 +97,8 @@ export function Reactions({ videoId, stats }: { videoId: string; stats: VideoSta
           aria-pressed={selected.has(kind)}
           onClick={() => toggle(kind)}
         >
-          {emoji} <span>{Math.max(0, counts[kind] ?? 0)}</span>
+          {emoji}
+          {SHOW_NUMBERS ? <span>{Math.max(0, counts[kind] ?? 0)}</span> : null}
         </button>
       ))}
     </div>

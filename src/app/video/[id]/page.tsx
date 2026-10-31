@@ -6,6 +6,7 @@ import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeB
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { duration } from "@/components/video/VideoCard";
 import { getVideoBySlugOrId, getVideoStats } from "@/lib/data";
+import { SHOW_NUMBERS } from "@/lib/flags";
 import { siteConfig } from "@/lib/site";
 
 function linkify(text: string) {
@@ -56,8 +57,8 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
         <div className="page">
           <div className="mx-auto max-w-4xl">
             <p className="eyebrow">
-              {video.section} · {duration(video.duration_seconds)} · {stats.views.toLocaleString()}{" "}
-              views
+              {video.section} · {duration(video.duration_seconds)}
+              {SHOW_NUMBERS ? ` · ${stats.views.toLocaleString()} views` : null}
             </p>
             <h1 className="font-display mt-6 text-3xl normal-case md:text-5xl">{video.title}</h1>
             {video.subtitle && <p className="text-ink-2 mt-4 text-lg">{video.subtitle}</p>}

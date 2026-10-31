@@ -49,7 +49,13 @@ function matchesCountry(name: string, country: string) {
   );
 }
 
-export default function Globe({ members }: { members: CountryMembers[] }) {
+export default function Globe({
+  members,
+  showCounts = true,
+}: {
+  members: CountryMembers[];
+  showCounts?: boolean;
+}) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
@@ -161,7 +167,9 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
   return (
     <div
       ref={wrapperRef}
-      className="bg-surface relative aspect-[4/5] w-full overflow-hidden rounded-[var(--radius-media)] lg:aspect-square"
+      className={`bg-surface relative w-full overflow-hidden rounded-[var(--radius-media)] ${
+        showCounts ? "aspect-[4/5] lg:aspect-square" : "aspect-square"
+      }`}
     >
       {dimensions.width > 0 && dimensions.height > 0 ? (
         <GlobeImpl
@@ -228,7 +236,7 @@ export default function Globe({ members }: { members: CountryMembers[] }) {
           labelAltitude={0.012}
           pointLabel={(point) => {
             const row = point as Point;
-            return `${row.country_name}: ${row.members}`;
+            return showCounts ? `${row.country_name}: ${row.members}` : row.country_name;
           }}
           enablePointerInteraction
         />
