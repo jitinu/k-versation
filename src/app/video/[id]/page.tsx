@@ -6,7 +6,7 @@ import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeB
 import { VideoPlayer } from "@/components/video/VideoPlayer";
 import { duration } from "@/components/video/VideoCard";
 import { getVideoBySlugOrId, getVideoStats } from "@/lib/data";
-import { SHOW_NUMBERS } from "@/lib/flags";
+import { SHOW_COMMENTS, SHOW_NUMBERS, SHOW_REACTIONS } from "@/lib/flags";
 import { siteConfig } from "@/lib/site";
 
 function linkify(text: string) {
@@ -66,10 +66,10 @@ export default async function VideoPage({ params }: { params: Promise<{ id: stri
               {linkify(video.description)}
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Reactions videoId={video.id} stats={stats} />
+              {SHOW_REACTIONS && <Reactions videoId={video.id} stats={stats} />}
               <SubscribeEpisodeButton />
             </div>
-            <Comments videoId={video.id} />
+            {SHOW_COMMENTS && <Comments videoId={video.id} />}
           </div>
         </div>
       </section>
