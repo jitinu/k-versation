@@ -1,6 +1,6 @@
 import { Reveal } from "@/components/motion/Reveal";
 import { SplitText } from "@/components/motion/SplitText";
-import { Carousel } from "@/components/video/Carousel";
+import { SafeCarousel as Carousel } from "@/components/video/SafeCarousel";
 import { VideoCard } from "@/components/video/VideoCard";
 import { listPopular, listVideos } from "@/lib/data";
 

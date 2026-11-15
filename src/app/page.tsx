@@ -5,7 +5,8 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SplitText } from "@/components/motion/SplitText";
 import Globe from "@/components/Globe";
 import { TimeDive, type Era } from "@/components/home/TimeDive";
-import { Carousel } from "@/components/video/Carousel";
+import { SafeBoundary } from "@/components/SafeBoundary";
+import { SafeCarousel as Carousel } from "@/components/video/SafeCarousel";
 import { VideoCard } from "@/components/video/VideoCard";
 import { SubscribeEpisodeButton } from "@/components/subscribe/SubscribeEpisodeButton";
 import { getLatest, getMembersByCountry, getSiteNumbers, listPopular } from "@/lib/data";
@@ -100,7 +101,9 @@ export default async function Home() {
 
   return (
     <>
-      <TimeDive eras={eras} closing={closing} />
+      <SafeBoundary fallback={null}>
+        <TimeDive eras={eras} closing={closing} />
+      </SafeBoundary>
 
       <section data-theme="ivory" className="grain">
         <div className="page flex min-h-[calc(100dvh-9rem)] flex-col justify-between pt-16 pb-16 md:pt-24">
@@ -248,7 +251,7 @@ export default async function Home() {
                 : "mt-16 grid min-w-0 grid-cols-1 gap-12"
             }
           >
-            <div className={SHOW_NUMBERS ? "" : "mx-auto min-w-0 w-full max-w-4xl"}>
+            <div className={SHOW_NUMBERS ? "" : "mx-auto w-full max-w-4xl min-w-0"}>
               <Globe members={members} showCounts={SHOW_NUMBERS} />
             </div>
             {SHOW_NUMBERS && numbers ? (

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { GlobeMethods } from "react-globe.gl";
 import { MeshPhongMaterial } from "three";
 import { feature } from "topojson-client";
@@ -9,6 +9,7 @@ import type { FeatureCollection } from "geojson";
 import topology from "world-atlas/countries-110m.json";
 import { getCountryCoords } from "@/lib/countryCoords";
 import type { CountryMembers } from "@/lib/supabase/types";
+import { SafeBoundary } from "@/components/SafeBoundary";
 
 const GlobeImpl = dynamic(() => import("react-globe.gl"), { ssr: false });
 
@@ -42,6 +43,20 @@ const aliases: Record<string, string[]> = {
   "Western Sahara": ["W. Sahara"],
 };
 
+let webglSupport: boolean | undefined;
+function hasWebgl() {
+  if (webglSupport === undefined) {
+    try {
+      const canvas = document.createElement("canvas");
+      webglSupport = Boolean(canvas.getContext("webgl2") || canvas.getContext("webgl"));
+    } catch {
+      webglSupport = false;
+    }
+  }
+  return webglSupport;
+}
+const noopSubscribe = () => () => {};
+
 function matchesCountry(name: string, country: string) {
   const normalized = name.toLowerCase();
   return [country, ...(aliases[country] ?? [])].some(
@@ -60,6 +75,7 @@ export default function Globe({
   const globeRef = useRef<GlobeMethods | undefined>(undefined);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredCountry, setHoveredCountry] = useState<object | null>(null);
+  const webgl = useSyncExternalStore(noopSubscribe, hasWebgl, () => null);
   const globeMaterial = useMemo(
     () =>
       new MeshPhongMaterial({
@@ -164,6 +180,20 @@ export default function Globe({
     return () => cancelAnimationFrame(frame);
   }, [applyGlobeView, dimensions]);
 
+  const fallback = (
+    <div className="absolute inset-0 flex flex-wrap content-center items-center justify-center gap-3 p-8">
+      {members.map((row) => (
+        <span
+          key={row.country_code}
+          className="rounded-full border border-white/20 px-4 py-2 text-sm text-white/85"
+        >
+          {row.country_name}
+          {showCounts ? ` · ${row.members.toLocaleString()}` : null}
+        </span>
+      ))}
+    </div>
+  );
+
   return (
     <div
       ref={wrapperRef}
@@ -171,75 +201,79 @@ export default function Globe({
         showCounts ? "aspect-[4/5] lg:aspect-square" : "aspect-square"
       }`}
     >
-      {dimensions.width > 0 && dimensions.height > 0 ? (
-        <GlobeImpl
-          ref={globeRef}
-          width={dimensions.width}
-          height={dimensions.height}
-          backgroundColor="rgba(0,0,0,0)"
-          globeMaterial={globeMaterial}
-          showAtmosphere
-          atmosphereColor={BLUE}
-          atmosphereAltitude={0.12}
-          onGlobeReady={applyGlobeView}
-          hexPolygonsData={countries}
-          hexPolygonResolution={3}
-          hexPolygonMargin={0.68}
-          hexPolygonUseDots
-          hexPolygonAltitude={(polygon) => {
-            const name = String(
-              (polygon as { properties?: { name?: string } }).properties?.name ?? "",
-            );
-            return memberNames.some((country) => matchesCountry(name, country)) ? 0.006 : 0.001;
-          }}
-          hexPolygonColor={(polygon) => {
-            const name = String(
-              (polygon as { properties?: { name?: string } }).properties?.name ?? "",
-            );
-            const active = memberNames.some((country) => matchesCountry(name, country));
-            if (polygon === hoveredCountry) return "rgba(255,255,255,0.72)";
-            if (!active) return "rgba(255,255,255,0.10)";
-            const southKorea = ["south korea", "republic of korea"].includes(name.toLowerCase());
-            return southKorea ? RED : BLUE;
-          }}
-          onHexPolygonHover={(polygon) => setHoveredCountry(polygon)}
-          pointsData={points}
-          pointsMerge={false}
-          pointLat="lat"
-          pointLng="lng"
-          pointAltitude={0.004}
-          pointRadius={(point) => 0.35 + Math.sqrt((point as Point).members) * 0.05}
-          pointColor={() => WHITE}
-          ringsData={points}
-          ringLat="lat"
-          ringLng="lng"
-          ringColor={() => (t: number) => `rgba(205,46,58,${(1 - t) * 0.8})`}
-          ringMaxRadius={(point) => 2.5 + Math.sqrt((point as Point).members) * 0.9}
-          ringPropagationSpeed={1.1}
-          ringRepeatPeriod={2600}
-          arcsData={arcs}
-          arcColor={() => ["rgba(255,255,255,0)", RED, "rgba(255,255,255,0)"]}
-          arcStroke={0.28}
-          arcAltitudeAutoScale={0.4}
-          arcDashLength={0.3}
-          arcDashGap={1.2}
-          arcDashInitialGap={() => Math.random() * 2}
-          arcDashAnimateTime={3200}
-          labelsData={points}
-          labelLat="lat"
-          labelLng="lng"
-          labelText="country_name"
-          labelSize={1.1}
-          labelDotRadius={0}
-          labelColor={() => "rgba(255,255,255,0.85)"}
-          labelResolution={2}
-          labelAltitude={0.012}
-          pointLabel={(point) => {
-            const row = point as Point;
-            return showCounts ? `${row.country_name}: ${row.members}` : row.country_name;
-          }}
-          enablePointerInteraction
-        />
+      {webgl === false ? (
+        fallback
+      ) : webgl && dimensions.width > 0 && dimensions.height > 0 ? (
+        <SafeBoundary fallback={fallback}>
+          <GlobeImpl
+            ref={globeRef}
+            width={dimensions.width}
+            height={dimensions.height}
+            backgroundColor="rgba(0,0,0,0)"
+            globeMaterial={globeMaterial}
+            showAtmosphere
+            atmosphereColor={BLUE}
+            atmosphereAltitude={0.12}
+            onGlobeReady={applyGlobeView}
+            hexPolygonsData={countries}
+            hexPolygonResolution={3}
+            hexPolygonMargin={0.68}
+            hexPolygonUseDots
+            hexPolygonAltitude={(polygon) => {
+              const name = String(
+                (polygon as { properties?: { name?: string } }).properties?.name ?? "",
+              );
+              return memberNames.some((country) => matchesCountry(name, country)) ? 0.006 : 0.001;
+            }}
+            hexPolygonColor={(polygon) => {
+              const name = String(
+                (polygon as { properties?: { name?: string } }).properties?.name ?? "",
+              );
+              const active = memberNames.some((country) => matchesCountry(name, country));
+              if (polygon === hoveredCountry) return "rgba(255,255,255,0.72)";
+              if (!active) return "rgba(255,255,255,0.10)";
+              const southKorea = ["south korea", "republic of korea"].includes(name.toLowerCase());
+              return southKorea ? RED : BLUE;
+            }}
+            onHexPolygonHover={(polygon) => setHoveredCountry(polygon)}
+            pointsData={points}
+            pointsMerge={false}
+            pointLat="lat"
+            pointLng="lng"
+            pointAltitude={0.004}
+            pointRadius={(point) => 0.35 + Math.sqrt((point as Point).members) * 0.05}
+            pointColor={() => WHITE}
+            ringsData={points}
+            ringLat="lat"
+            ringLng="lng"
+            ringColor={() => (t: number) => `rgba(205,46,58,${(1 - t) * 0.8})`}
+            ringMaxRadius={(point) => 2.5 + Math.sqrt((point as Point).members) * 0.9}
+            ringPropagationSpeed={1.1}
+            ringRepeatPeriod={2600}
+            arcsData={arcs}
+            arcColor={() => ["rgba(255,255,255,0)", RED, "rgba(255,255,255,0)"]}
+            arcStroke={0.28}
+            arcAltitudeAutoScale={0.4}
+            arcDashLength={0.3}
+            arcDashGap={1.2}
+            arcDashInitialGap={() => Math.random() * 2}
+            arcDashAnimateTime={3200}
+            labelsData={points}
+            labelLat="lat"
+            labelLng="lng"
+            labelText="country_name"
+            labelSize={1.1}
+            labelDotRadius={0}
+            labelColor={() => "rgba(255,255,255,0.85)"}
+            labelResolution={2}
+            labelAltitude={0.012}
+            pointLabel={(point) => {
+              const row = point as Point;
+              return showCounts ? `${row.country_name}: ${row.members}` : row.country_name;
+            }}
+            enablePointerInteraction
+          />
+        </SafeBoundary>
       ) : null}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,71,160,.08)_0%,transparent_38%,rgba(8,8,7,.5)_100%)]" />
     </div>
