@@ -181,11 +181,11 @@ export default function Globe({
   }, [applyGlobeView, dimensions]);
 
   const fallback = (
-    <div className="absolute inset-0 flex flex-wrap content-center items-center justify-center gap-3 p-8">
+    <div className="absolute inset-0 flex flex-wrap content-center items-center justify-center gap-2 p-4 md:gap-3 md:p-8">
       {members.map((row) => (
         <span
           key={row.country_code}
-          className="rounded-full border border-white/20 px-4 py-2 text-sm text-white/85"
+          className="rounded-full border border-white/20 px-3 py-1.5 text-xs text-white/85 md:px-4 md:py-2 md:text-sm"
         >
           {row.country_name}
           {showCounts ? ` · ${row.members.toLocaleString()}` : null}
